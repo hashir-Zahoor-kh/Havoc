@@ -1,0 +1,49 @@
+# Binaries
+/bin/
+/dist/
+/havoc-control
+/havoc-agent
+/havoc-recorder
+
+# Go build artifacts
+*.exe
+*.test
+*.out
+*.prof
+coverage.*
+
+# Go workspace
+go.work
+go.work.sum
+
+# Dependency vendor
+/vendor/
+
+# IDEs / editors
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Env / secrets
+.env
+.env.local
+*.local.yaml
+kubeconfig
+*.tfvars
+!example.tfvars
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+crash.log
+
+# Docker build scratch
+docker-compose.override.yml
+
+# Logs / temp
+*.log
+tmp/
