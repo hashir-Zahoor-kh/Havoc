@@ -1,0 +1,20 @@
+# A three-node kind cluster: one control-plane + two workers. Two
+# workers is the minimum that makes the per-node DaemonSet story
+# meaningful — every agent gets a peer it can confuse with itself
+# during testing, and self-filtering by NODE_NAME has something to
+# actually filter.
+#
+# extraPortMappings publishes the control plane's HTTP port to the
+# host so `havoc-control` is reachable as `localhost:8080`.
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: havoc
+
+nodes:
+  - role: control-plane
+    extraPortMappings:
+      - containerPort: 30080
+        hostPort: 8080
+        protocol: TCP
+  - role: worker
+  - role: worker

@@ -1,0 +1,65 @@
+# havoc-control: HTTP API + CLI backend. One replica is enough for the
+# demo — the control plane is stateless apart from Postgres/Redis.
+#
+# A NodePort service publishes 30080 so kind's extraPortMappings can
+# expose it as localhost:8080 on the host.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: havoc-control
+  namespace: havoc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: havoc-control
+  template:
+    metadata:
+      labels:
+        app: havoc-control
+    spec:
+      serviceAccountName: havoc-control
+      containers:
+        - name: havoc-control
+          image: havoc/havoc-control:dev
+          imagePullPolicy: IfNotPresent
+          args: ["serve"]
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: HAVOC_HTTP_ADDR
+              value: ":8080"
+            - name: HAVOC_KAFKA_BROKERS
+              value: "kafka:29092"
+            - name: HAVOC_POSTGRES_DSN
+              value: "postgres://havoc:havoc@postgres:5432/havoc?sslmode=disable"
+            - name: HAVOC_REDIS_ADDR
+              value: "redis:6379"
+            - name: HAVOC_IN_CLUSTER
+              value: "true"
+            - name: HAVOC_BLAST_RADIUS_PCT
+              value: "25"
+          readinessProbe:
+            httpGet: { path: /healthz, port: http }
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: { path: /healthz, port: http }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: havoc-control
+  namespace: havoc
+spec:
+  type: NodePort
+  selector:
+    app: havoc-control
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      nodePort: 30080

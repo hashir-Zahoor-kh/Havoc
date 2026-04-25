@@ -1,0 +1,51 @@
+# havoc-agent runs as a DaemonSet — one pod per node — so every node
+# has a local executor for any pod scheduled on it. NODE_NAME comes
+# from the downward API and is the only piece of identity each agent
+# carries; both the Kafka consumer group and the self-filter use it.
+#
+# hostNetwork is intentionally left off: the agent needs to reach
+# kafka/redis (cluster DNS) and the API server (in-cluster config),
+# both of which work on the pod network.
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: havoc-agent
+  namespace: havoc
+spec:
+  selector:
+    matchLabels:
+      app: havoc-agent
+  template:
+    metadata:
+      labels:
+        app: havoc-agent
+    spec:
+      serviceAccountName: havoc-agent
+      # Tolerate the kind control-plane taint so we get an agent on
+      # every node, including the control-plane node. Useful for the
+      # demo where blast-radius percentages are computed against a
+      # tiny cluster.
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+      containers:
+        - name: havoc-agent
+          image: havoc/havoc-agent:dev
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: HAVOC_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: HAVOC_KAFKA_BROKERS
+              value: "kafka:29092"
+            - name: HAVOC_KAFKA_GROUP
+              value: "havoc-agent"
+            - name: HAVOC_REDIS_ADDR
+              value: "redis:6379"
+            - name: HAVOC_IN_CLUSTER
+              value: "true"
+          resources:
+            requests: { cpu: "50m", memory: "64Mi" }
+            limits:   { cpu: "500m", memory: "256Mi" }

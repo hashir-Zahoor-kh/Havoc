@@ -1,0 +1,146 @@
+# Filebeat runs as a DaemonSet inside the kind cluster and ships
+# kubelet container logs from the `havoc` namespace into Elasticsearch.
+# ES lives outside the cluster (in docker-compose) and is reachable as
+# `elasticsearch:9200` because every kind node is attached to the same
+# `havoc` docker network the compose stack uses.
+#
+# Why a DaemonSet instead of a host-side container: the Havoc binaries
+# run as nested containers inside the kind nodes, so their stdout never
+# appears on the laptop's /var/lib/docker/containers. Tailing the
+# kubelet pod logs (/var/log/pods) catches them at the right level.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: filebeat
+  namespace: havoc
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: filebeat
+rules:
+  - apiGroups: [""]
+    resources: ["namespaces", "pods", "nodes"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: filebeat
+subjects:
+  - kind: ServiceAccount
+    name: filebeat
+    namespace: havoc
+roleRef:
+  kind: ClusterRole
+  name: filebeat
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: filebeat-config
+  namespace: havoc
+data:
+  filebeat.yml: |
+    # Kubernetes autodiscover: only emit logs from pods in the `havoc`
+    # namespace. The Havoc binaries log structured JSON, so
+    # decode_json_fields lifts slog fields (component, experiment_id,
+    # outcome, ...) to top-level fields searchable in Kibana.
+    filebeat.autodiscover:
+      providers:
+        - type: kubernetes
+          node: ${NODE_NAME}
+          hints.enabled: false
+          templates:
+            - condition:
+                equals:
+                  kubernetes.namespace: havoc
+              config:
+                - type: container
+                  paths:
+                    - /var/log/containers/*-${data.kubernetes.container.id}.log
+                  processors:
+                    - decode_json_fields:
+                        fields: ["message"]
+                        target: ""
+                        overwrite_keys: true
+                        add_error_key: true
+
+    processors:
+      - add_kubernetes_metadata:
+          host: ${NODE_NAME}
+          matchers:
+            - logs_path:
+                logs_path: "/var/log/containers/"
+
+    output.elasticsearch:
+      hosts: ["elasticsearch:9200"]
+      index: "havoc-%{+yyyy.MM.dd}"
+
+    setup.template.name: "havoc"
+    setup.template.pattern: "havoc-*"
+    setup.ilm.enabled: false
+
+    logging.level: info
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: filebeat
+  namespace: havoc
+spec:
+  selector:
+    matchLabels:
+      app: filebeat
+  template:
+    metadata:
+      labels:
+        app: filebeat
+    spec:
+      serviceAccountName: filebeat
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: filebeat
+          image: docker.elastic.co/beats/filebeat:8.13.4
+          args: ["-c", "/etc/filebeat.yml", "-e", "-strict.perms=false"]
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          securityContext:
+            runAsUser: 0
+          resources:
+            requests: { cpu: "50m", memory: "100Mi" }
+            limits:   { cpu: "500m", memory: "300Mi" }
+          volumeMounts:
+            - name: config
+              mountPath: /etc/filebeat.yml
+              subPath: filebeat.yml
+              readOnly: true
+            - name: varlogcontainers
+              mountPath: /var/log/containers
+              readOnly: true
+            - name: varlogpods
+              mountPath: /var/log/pods
+              readOnly: true
+            - name: data
+              mountPath: /usr/share/filebeat/data
+      volumes:
+        - name: config
+          configMap:
+            name: filebeat-config
+            defaultMode: 0640
+        - name: varlogcontainers
+          hostPath:
+            path: /var/log/containers
+        - name: varlogpods
+          hostPath:
+            path: /var/log/pods
+        - name: data
+          emptyDir: {}

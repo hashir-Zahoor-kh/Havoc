@@ -1,0 +1,36 @@
+# havoc-recorder consumes the results topic and lands every result in
+# Postgres. Two replicas give us a basic at-least-once consumer group;
+# the result insert is idempotent on id so duplicate deliveries (on
+# rebalance) are safe.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: havoc-recorder
+  namespace: havoc
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: havoc-recorder
+  template:
+    metadata:
+      labels:
+        app: havoc-recorder
+    spec:
+      serviceAccountName: havoc-recorder
+      containers:
+        - name: havoc-recorder
+          image: havoc/havoc-recorder:dev
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: HAVOC_KAFKA_BROKERS
+              value: "kafka:29092"
+            - name: HAVOC_KAFKA_GROUP
+              value: "havoc-recorder"
+            - name: HAVOC_POSTGRES_DSN
+              value: "postgres://havoc:havoc@postgres:5432/havoc?sslmode=disable"
+            - name: HAVOC_REDIS_ADDR
+              value: "redis:6379"
+          resources:
+            requests: { cpu: "50m", memory: "64Mi" }
+            limits:   { cpu: "200m", memory: "256Mi" }

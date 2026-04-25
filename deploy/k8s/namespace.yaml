@@ -1,0 +1,16 @@
+# Two namespaces: one for Havoc itself and one for the demo workload it
+# attacks. Keeping them separate makes the blast-radius selector clear
+# and prevents an experiment from ever targeting the control plane.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: havoc
+  labels:
+    name: havoc
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: havoc-demo
+  labels:
+    name: havoc-demo

@@ -1,0 +1,54 @@
+# A six-replica "checkout" Deployment Havoc can attack. The image is
+# alpine sleeping in a loop — small, has `sh` for cpu_pressure, and we
+# install iproute2 in an init step so `tc` is available for
+# network_latency.
+#
+# securityContext.capabilities.add: NET_ADMIN is required for `tc
+# qdisc` to add a netem qdisc on eth0. This is a deliberate prod-unsafe
+# choice for a demo workload — production targets should not run with
+# NET_ADMIN; the brief acknowledges network_latency requires
+# co-operation from the workload.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkout
+  namespace: havoc-demo
+  labels:
+    app: checkout
+spec:
+  replicas: 6
+  selector:
+    matchLabels:
+      app: checkout
+  template:
+    metadata:
+      labels:
+        app: checkout
+    spec:
+      # Spread across nodes so blast-radius pre-pick has work to do.
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: checkout
+      containers:
+        - name: app
+          image: alpine:3.20
+          command: ["/bin/sh", "-c"]
+          # Install iproute2 (tc) once at start; then idle. A real
+          # workload would have iproute2 baked into its image.
+          args:
+            - |
+              apk add --no-cache iproute2 >/dev/null
+              echo "checkout ready on $(hostname)"
+              # Sleep loop so the pod stays alive without inviting a
+              # signal-handling debate.
+              while true; do sleep 3600; done
+          securityContext:
+            capabilities:
+              add: ["NET_ADMIN"]
+          resources:
+            requests: { cpu: "50m", memory: "32Mi" }
+            limits:   { cpu: "500m", memory: "128Mi" }

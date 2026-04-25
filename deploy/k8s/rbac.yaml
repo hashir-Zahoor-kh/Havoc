@@ -1,0 +1,75 @@
+# RBAC for the three Havoc components.
+#
+# - Control plane: needs to list pods (blast-radius pre-pick) across
+#   the demo namespace. List-only — never delete or exec from the
+#   control plane.
+# - Agent: needs to list pods on its node, delete them (pod_kill), and
+#   exec inside them (cpu_pressure, network_latency). Cluster-scoped
+#   because each agent acts as a singleton on its node.
+# - Recorder: doesn't talk to the API, so no role needed beyond the
+#   default ServiceAccount.
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: havoc-control
+  namespace: havoc
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: havoc-control
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: havoc-control
+subjects:
+  - kind: ServiceAccount
+    name: havoc-control
+    namespace: havoc
+roleRef:
+  kind: ClusterRole
+  name: havoc-control
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: havoc-agent
+  namespace: havoc
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: havoc-agent
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "delete"]
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    verbs: ["create", "get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: havoc-agent
+subjects:
+  - kind: ServiceAccount
+    name: havoc-agent
+    namespace: havoc
+roleRef:
+  kind: ClusterRole
+  name: havoc-agent
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: havoc-recorder
+  namespace: havoc
