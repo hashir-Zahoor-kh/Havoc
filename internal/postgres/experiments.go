@@ -24,13 +24,18 @@ func (s *Store) InsertExperiment(ctx context.Context, e domain.Experiment) error
 	if !e.ScheduledFor.IsZero() {
 		scheduledFor = e.ScheduledFor
 	}
+	targetPods := e.TargetPods
+	if targetPods == nil {
+		targetPods = []string{}
+	}
 	_, err = s.pool.Exec(ctx, `
 INSERT INTO experiments (
     id, created_at, scheduled_for, action_type, target_selector,
-    target_namespace, duration_seconds, parameters, status, rejection_reason
-) VALUES ($1, $2, $3, $4, $5::jsonb, $6, $7, $8::jsonb, $9, NULLIF($10, ''))`,
+    target_namespace, target_pods, duration_seconds, parameters, status, rejection_reason
+) VALUES ($1, $2, $3, $4, $5::jsonb, $6, $7, $8, $9::jsonb, $10, NULLIF($11, ''))`,
 		e.ID, e.CreatedAt, scheduledFor, string(e.ActionType), selector,
-		e.TargetNamespace, e.DurationSeconds, params, string(e.Status), e.RejectionReason,
+		e.TargetNamespace, targetPods, e.DurationSeconds, params,
+		string(e.Status), e.RejectionReason,
 	)
 	if err != nil {
 		return fmt.Errorf("insert experiment: %w", err)
@@ -58,7 +63,7 @@ func (s *Store) ListExperiments(ctx context.Context, limit int) ([]domain.Experi
 	}
 	rows, err := s.pool.Query(ctx, `
 SELECT id, created_at, scheduled_for, action_type, target_selector,
-       target_namespace, duration_seconds, parameters, status,
+       target_namespace, target_pods, duration_seconds, parameters, status,
        COALESCE(rejection_reason, '')
 FROM experiments
 ORDER BY created_at DESC
@@ -75,7 +80,7 @@ LIMIT $1`, limit)
 func (s *Store) GetExperiment(ctx context.Context, id domain.ID) (*domain.Experiment, error) {
 	rows, err := s.pool.Query(ctx, `
 SELECT id, created_at, scheduled_for, action_type, target_selector,
-       target_namespace, duration_seconds, parameters, status,
+       target_namespace, target_pods, duration_seconds, parameters, status,
        COALESCE(rejection_reason, '')
 FROM experiments WHERE id = $1`, id)
 	if err != nil {
@@ -105,7 +110,7 @@ func scanExperiments(rows pgx.Rows) ([]domain.Experiment, error) {
 		)
 		if err := rows.Scan(
 			&e.ID, &e.CreatedAt, &scheduledFor, &actionType, &selectorRaw,
-			&e.TargetNamespace, &e.DurationSeconds, &paramsRaw, &status,
+			&e.TargetNamespace, &e.TargetPods, &e.DurationSeconds, &paramsRaw, &status,
 			&e.RejectionReason,
 		); err != nil {
 			return nil, err

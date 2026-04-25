@@ -57,6 +57,12 @@ type Parameters struct {
 }
 
 // Experiment is the request-time record of a chaos experiment.
+//
+// TargetPods is filled in by the control plane *after* the guardrails
+// pass. It names the specific pods this experiment is permitted to
+// affect — every agent self-filters by intersecting TargetPods with
+// the matching pods on its own node, which is how Havoc enforces blast
+// radius across a DaemonSet of independent agents.
 type Experiment struct {
 	ID              ID                `json:"id"`
 	CreatedAt       time.Time         `json:"created_at"`
@@ -64,6 +70,7 @@ type Experiment struct {
 	ActionType      ActionType        `json:"action_type"`
 	TargetSelector  map[string]string `json:"target_selector"`
 	TargetNamespace string            `json:"target_namespace"`
+	TargetPods      []string          `json:"target_pods,omitempty"`
 	DurationSeconds int               `json:"duration_seconds"`
 	Parameters      Parameters        `json:"parameters"`
 	Status          Status            `json:"status"`

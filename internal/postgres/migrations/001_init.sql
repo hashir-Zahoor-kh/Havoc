@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS experiments (
     action_type       TEXT        NOT NULL,
     target_selector   JSONB       NOT NULL,
     target_namespace  TEXT        NOT NULL,
+    target_pods       TEXT[]      NOT NULL DEFAULT '{}',
     duration_seconds  INT         NOT NULL,
     parameters        JSONB       NOT NULL DEFAULT '{}'::jsonb,
     status            TEXT        NOT NULL,

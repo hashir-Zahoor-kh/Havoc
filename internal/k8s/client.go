@@ -1,24 +1,32 @@
 // Package k8s wraps client-go to provide the narrow set of operations
 // Havoc actually needs: listing pods by selector (for blast radius checks
-// in the control plane) and deleting pods (for the pod_kill action in the
-// agent). Keeping this narrow prevents the k8s import surface from
-// leaking into unrelated packages.
+// in the control plane), deleting pods (for the pod_kill action), and
+// executing commands inside a target container (for cpu_pressure and
+// network_latency). Keeping this narrow prevents the k8s import surface
+// from leaking into unrelated packages.
 package k8s
 
 import (
 	"context"
 	"fmt"
+	"io"
 
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/client-go/tools/remotecommand"
 )
 
-// Client is a typed wrapper around a Kubernetes clientset.
+// Client is a typed wrapper around a Kubernetes clientset and the rest
+// config it was built from. The rest config is retained so the exec
+// subresource can construct its own SPDY transport.
 type Client struct {
-	cs *kubernetes.Clientset
+	cs      *kubernetes.Clientset
+	restCfg *rest.Config
 }
 
 // Config selects how the Kubernetes client is constructed. InCluster uses
@@ -39,7 +47,7 @@ func New(cfg Config) (*Client, error) {
 	if err != nil {
 		return nil, fmt.Errorf("build clientset: %w", err)
 	}
-	return &Client{cs: cs}, nil
+	return &Client{cs: cs, restCfg: restCfg}, nil
 }
 
 func buildRESTConfig(cfg Config) (*rest.Config, error) {
@@ -103,4 +111,61 @@ func (c *Client) ListPodsOnNode(ctx context.Context, node, namespace string, sel
 		names = append(names, p.Name)
 	}
 	return names, nil
+}
+
+// FirstContainerName returns the name of the pod's first container. The
+// agent uses this when the experiment doesn't pin a container — most
+// workloads have just one.
+func (c *Client) FirstContainerName(ctx context.Context, namespace, pod string) (string, error) {
+	p, err := c.cs.CoreV1().Pods(namespace).Get(ctx, pod, metav1.GetOptions{})
+	if err != nil {
+		return "", fmt.Errorf("get pod %s/%s: %w", namespace, pod, err)
+	}
+	if len(p.Spec.Containers) == 0 {
+		return "", fmt.Errorf("pod %s/%s has no containers", namespace, pod)
+	}
+	return p.Spec.Containers[0].Name, nil
+}
+
+// ExecOptions targets a single command execution inside a container.
+type ExecOptions struct {
+	Namespace string
+	Pod       string
+	Container string
+	Command   []string
+	Stdin     io.Reader
+	Stdout    io.Writer
+	Stderr    io.Writer
+}
+
+// ExecInPod runs Command inside the named container and streams stdout
+// and stderr through the supplied writers. It returns when the command
+// exits, when the context is cancelled (the agent uses this for abort),
+// or when the connection breaks.
+func (c *Client) ExecInPod(ctx context.Context, opts ExecOptions) error {
+	req := c.cs.CoreV1().RESTClient().Post().
+		Resource("pods").
+		Name(opts.Pod).
+		Namespace(opts.Namespace).
+		SubResource("exec").
+		VersionedParams(&corev1.PodExecOptions{
+			Container: opts.Container,
+			Command:   opts.Command,
+			Stdin:     opts.Stdin != nil,
+			Stdout:    true,
+			Stderr:    true,
+		}, scheme.ParameterCodec)
+
+	exec, err := remotecommand.NewSPDYExecutor(c.restCfg, "POST", req.URL())
+	if err != nil {
+		return fmt.Errorf("build exec: %w", err)
+	}
+	if err := exec.StreamWithContext(ctx, remotecommand.StreamOptions{
+		Stdin:  opts.Stdin,
+		Stdout: opts.Stdout,
+		Stderr: opts.Stderr,
+	}); err != nil {
+		return fmt.Errorf("stream exec: %w", err)
+	}
+	return nil
 }

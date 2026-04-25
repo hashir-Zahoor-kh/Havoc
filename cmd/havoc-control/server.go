@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"math/rand/v2"
 	"net/http"
 	"os"
 	"strconv"
@@ -173,6 +174,24 @@ func (s *server) handleSchedule(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Pin the targets *here*, after the guard passes. Every supported
+	// action currently affects a single pod, so we randomly pick one
+	// from the matching set. Embedding the chosen names in the command
+	// is what lets DaemonSet agents self-filter without violating the
+	// blast radius — only the agent on that pod's node will act.
+	candidates, err := s.pods.ListPods(r.Context(), exp.TargetNamespace, exp.TargetSelector)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, fmt.Errorf("resolve targets: %w", err))
+		return
+	}
+	if len(candidates) == 0 {
+		err := safety.ErrNoMatchingPods
+		s.persistRejected(r.Context(), exp, err.Error())
+		writeError(w, http.StatusConflict, err)
+		return
+	}
+	exp.TargetPods = []string{candidates[rand.IntN(len(candidates))]}
+
 	lockTTL := time.Duration(exp.DurationSeconds+s.cfg.LockBufferSeconds) * time.Second
 	acquired, err := s.redis.AcquireLock(r.Context(), exp.ServiceName(), string(exp.ID), lockTTL)
 	if err != nil {
@@ -191,7 +210,8 @@ func (s *server) handleSchedule(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusInternalServerError, err)
 		return
 	}
-	if err := s.kafka.Publish(r.Context(), string(exp.ID), exp); err != nil {
+	cmd := domain.Command{Type: domain.CommandSchedule, Experiment: &exp}
+	if err := s.kafka.Publish(r.Context(), string(exp.ID), cmd); err != nil {
 		// Best-effort: mark rejected and release the lock.
 		_ = s.store.UpdateStatus(r.Context(), exp.ID, domain.StatusRejected, "publish failed: "+err.Error())
 		_ = s.redis.ReleaseLock(r.Context(), exp.ServiceName())
@@ -251,8 +271,8 @@ func (s *server) handleStop(w http.ResponseWriter, r *http.Request) {
 		s.logger.Warn("release lock failed", "experiment_id", id, "err", err)
 	}
 
-	abort := map[string]any{"type": "abort", "experiment_id": string(id)}
-	if err := s.abortsKfk.Publish(r.Context(), string(id), abort); err != nil {
+	cmd := domain.Command{Type: domain.CommandAbort, ExperimentID: id}
+	if err := s.abortsKfk.Publish(r.Context(), string(id), cmd); err != nil {
 		s.logger.Warn("publish abort failed", "experiment_id", id, "err", err)
 	}
 	s.logger.Info("experiment aborted", "experiment_id", id)
@@ -264,8 +284,8 @@ func (s *server) handleEngageKillSwitch(w http.ResponseWriter, r *http.Request) 
 		writeError(w, http.StatusInternalServerError, err)
 		return
 	}
-	abort := map[string]any{"type": "kill-switch"}
-	if err := s.abortsKfk.Publish(r.Context(), "killswitch", abort); err != nil {
+	cmd := domain.Command{Type: domain.CommandKillSwitch}
+	if err := s.abortsKfk.Publish(r.Context(), "killswitch", cmd); err != nil {
 		s.logger.Warn("publish kill-switch broadcast failed", "err", err)
 	}
 	s.logger.Warn("kill switch engaged")
