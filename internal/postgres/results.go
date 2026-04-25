@@ -9,21 +9,24 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-// InsertResult persists an agent-reported experiment result. This is the
-// write path used by the recorder.
-func (s *Store) InsertResult(ctx context.Context, r domain.ExperimentResult) error {
-	_, err := s.pool.Exec(ctx, `
+// InsertResult persists an agent-reported experiment result. The insert
+// is idempotent on the result id so duplicate Kafka deliveries do not
+// produce duplicate rows. Returns true if a new row was inserted, false
+// if the id was already present.
+func (s *Store) InsertResult(ctx context.Context, r domain.ExperimentResult) (bool, error) {
+	tag, err := s.pool.Exec(ctx, `
 INSERT INTO experiment_results (
     id, experiment_id, agent_node, affected_pods, started_at,
     completed_at, outcome, error_message
-) VALUES ($1, $2, $3, $4, $5, $6, $7, NULLIF($8, ''))`,
+) VALUES ($1, $2, $3, $4, $5, $6, $7, NULLIF($8, ''))
+ON CONFLICT (id) DO NOTHING`,
 		r.ID, r.ExperimentID, r.AgentNode, r.AffectedPods, r.StartedAt,
 		r.CompletedAt, string(r.Outcome), r.ErrorMessage,
 	)
 	if err != nil {
-		return fmt.Errorf("insert result: %w", err)
+		return false, fmt.Errorf("insert result: %w", err)
 	}
-	return nil
+	return tag.RowsAffected() == 1, nil
 }
 
 // ListResults returns the most recent results for an experiment.

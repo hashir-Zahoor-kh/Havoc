@@ -40,6 +40,29 @@ func (c *Client) IsLocked(ctx context.Context, service string) (bool, error) {
 }
 
 // ReleaseLock removes the active-experiment lock for the given service.
+// Prefer ReleaseLockIfOwner when an experiment id is available — it
+// avoids unlocking a newer experiment that has already taken over the
+// slot.
 func (c *Client) ReleaseLock(ctx context.Context, service string) error {
 	return c.rdb.Del(ctx, activeLockKey(service)).Err()
+}
+
+// releaseIfOwnerScript is a compare-and-delete: only DELs the key if its
+// value equals the expected experiment id. Atomic on the Redis side.
+var releaseIfOwnerScript = goredis.NewScript(`
+if redis.call("get", KEYS[1]) == ARGV[1] then
+    return redis.call("del", KEYS[1])
+else
+    return 0
+end`)
+
+// ReleaseLockIfOwner releases the active-experiment lock only if the
+// stored value matches experimentID. Returns true when this caller's
+// experiment owned the lock and it was released.
+func (c *Client) ReleaseLockIfOwner(ctx context.Context, service, experimentID string) (bool, error) {
+	res, err := releaseIfOwnerScript.Run(ctx, c.rdb, []string{activeLockKey(service)}, experimentID).Int()
+	if err != nil {
+		return false, err
+	}
+	return res == 1, nil
 }

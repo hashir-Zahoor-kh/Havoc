@@ -247,7 +247,9 @@ func (s *server) handleStop(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusInternalServerError, err)
 		return
 	}
-	_ = s.redis.ReleaseLock(r.Context(), exp.ServiceName())
+	if _, err := s.redis.ReleaseLockIfOwner(r.Context(), exp.ServiceName(), string(id)); err != nil {
+		s.logger.Warn("release lock failed", "experiment_id", id, "err", err)
+	}
 
 	abort := map[string]any{"type": "abort", "experiment_id": string(id)}
 	if err := s.abortsKfk.Publish(r.Context(), string(id), abort); err != nil {
