@@ -1,0 +1,144 @@
+# Self-hosted Kafka on EKS via the Strimzi operator. Minimal dev
+# config: KRaft mode (no ZooKeeper), single combined controller +
+# broker pod, 5 GiB EBS for the log directory, plaintext listener
+# only. None of this is appropriate for production — the operator
+# is the right tool, but a real deployment would use ≥3 brokers,
+# TLS, authentication, and rack-aware spread across AZs.
+#
+# Apply order:
+#   1. helm install strimzi-kafka-operator strimzi/strimzi-kafka-operator -n kafka --create-namespace
+#   2. kubectl apply -f deploy/strimzi/kafka.yaml
+#   3. kubectl wait --for=condition=Ready kafka/havoc-kafka -n kafka --timeout=10m
+#
+# Bootstrap DNS name (referenced from charts/havoc/aws.values.yaml):
+#   havoc-kafka-kafka-bootstrap.kafka:9092
+#
+# Cross-namespace: Havoc pods live in `havoc`, Kafka lives in
+# `kafka`. The fully-qualified service name resolves through
+# CoreDNS — no NetworkPolicy in this dev setup is restricting it.
+
+# ---------- Node pool (combined role) ----------
+#
+# KafkaNodePool replaces the older Kafka.spec.kafka.replicas API.
+# In Strimzi 0.40+ with KRaft, every Kafka cluster needs at least
+# one NodePool defining which roles (controller, broker, or both)
+# its nodes carry. For a single-pod dev cluster, "combined" is the
+# only viable option — splitting controller and broker would
+# require two replicas, which doubles the RAM cost.
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaNodePool
+metadata:
+  name: combined
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: havoc-kafka
+spec:
+  replicas: 1
+  roles:
+    - controller
+    - broker
+  storage:
+    type: persistent-claim
+    size: 5Gi
+    # EKS doesn't ship a default StorageClass annotation — the only
+    # built-in class is `gp2` and it's flagged non-default. Without
+    # an explicit class, Strimzi creates the PVC with `storageClass:
+    # ""` and it sits unbound forever. Pinning to gp2 here is more
+    # honest than mutating the cluster-wide default and (a) keeps
+    # the gp2 → gp3 migration trivial in a future phase by changing
+    # one line, (b) means a fresh EKS cluster doesn't need a
+    # `kubectl patch storageclass` step before this manifest applies.
+    class: gp2
+    deleteClaim: true   # PVC torn down with the cluster — fine for dev
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 768Mi
+  jvmOptions:
+    "-Xms": 256m
+    "-Xmx": 512m
+
+---
+# ---------- Kafka cluster ----------
+#
+# annotations.strimzi.io/node-pools=enabled tells Strimzi to take
+# replica/role config from KafkaNodePool, not from this CR.
+# annotations.strimzi.io/kraft=enabled selects KRaft over ZooKeeper.
+# Both are required when using KafkaNodePool.
+#
+# Replication factors are all 1 because there's exactly one broker.
+# auto.create.topics.enable=true is a fallback — the topics below
+# are also explicitly declared as KafkaTopic CRs.
+apiVersion: kafka.strimzi.io/v1
+kind: Kafka
+metadata:
+  name: havoc-kafka
+  namespace: kafka
+  annotations:
+    strimzi.io/node-pools: enabled
+    strimzi.io/kraft: enabled
+spec:
+  kafka:
+    version: 4.1.0
+    metadataVersion: "4.1-IV0"
+    listeners:
+      - name: plain
+        port: 9092
+        type: internal
+        tls: false
+    config:
+      offsets.topic.replication.factor: 1
+      transaction.state.log.replication.factor: 1
+      transaction.state.log.min.isr: 1
+      default.replication.factor: 1
+      min.insync.replicas: 1
+      auto.create.topics.enable: "true"
+  # entityOperator runs the topic-operator pod that watches
+  # KafkaTopic CRs in this namespace and reconciles them into
+  # actual Kafka topics. Without it, the KafkaTopic CRs below
+  # would sit forever in NotReady.
+  entityOperator:
+    topicOperator: {}
+    userOperator: {}
+
+---
+# ---------- KafkaTopic: havoc.commands ----------
+#
+# metadata.name is a Kubernetes name (DNS-compatible, no dots);
+# spec.topicName is the actual Kafka topic. 3 partitions matches
+# the local docker-compose bootstrap so consumer-group rebalance
+# behaviour is the same in both envs.
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaTopic
+metadata:
+  name: havoc-commands
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: havoc-kafka
+spec:
+  topicName: havoc.commands
+  partitions: 3
+  replicas: 1
+  config:
+    retention.ms: 604800000   # 7 days
+    cleanup.policy: delete
+
+---
+# ---------- KafkaTopic: havoc.results ----------
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaTopic
+metadata:
+  name: havoc-results
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: havoc-kafka
+spec:
+  topicName: havoc.results
+  partitions: 3
+  replicas: 1
+  config:
+    retention.ms: 604800000
+    cleanup.policy: delete

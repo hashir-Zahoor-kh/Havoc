@@ -14,6 +14,7 @@ import (
 	"syscall"
 
 	"github.com/hashir-Zahoor-kh/Havoc/internal/config"
+	"github.com/hashir-Zahoor-kh/Havoc/internal/health"
 	hkafka "github.com/hashir-Zahoor-kh/Havoc/internal/kafka"
 	"github.com/hashir-Zahoor-kh/Havoc/internal/postgres"
 	"github.com/hashir-Zahoor-kh/Havoc/internal/recorder"
@@ -37,6 +38,17 @@ func run(ctx context.Context) error {
 	}
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo})).
 		With("component", "havoc-recorder")
+
+	// Health server starts immediately so the kubelet sees /healthz
+	// 200 even while the heavier dependencies (Postgres migration,
+	// Kafka subscribe) are still being set up. /readyz stays 503
+	// until MarkReady is called below.
+	healthSrv := health.New(cfg.HealthAddr)
+	go func() {
+		if err := healthSrv.Start(ctx); err != nil {
+			logger.Error("health server stopped", "err", err)
+		}
+	}()
 
 	store, err := postgres.New(ctx, cfg.PostgresDSN)
 	if err != nil {
@@ -65,7 +77,13 @@ func run(ctx context.Context) error {
 		"brokers", cfg.KafkaBrokers,
 		"topic", hkafka.TopicResults,
 		"group", cfg.KafkaGroupID,
+		"health_addr", cfg.HealthAddr,
 	)
+
+	// All dependencies dialed and the schema is migrated — flip
+	// /readyz to 200 so the kubelet and any HPA see the pod as
+	// healthy traffic capacity.
+	healthSrv.MarkReady()
 
 	// Errors from Process bubble out so the message offset stays
 	// uncommitted and the orchestrator (Kubernetes) restarts the pod —

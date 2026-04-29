@@ -1,0 +1,24 @@
+# Local .terraform cache and any plan files. State lives remotely so
+# nothing here should ever be committed. The lock file
+# (.terraform.lock.hcl) is also gitignored at the repo root — see
+# the root .gitignore for that rule. For a multi-operator project
+# we'd want it committed, but for this single-operator portfolio
+# project it's fine to regenerate via `terraform init`.
+.terraform/
+*.tfplan
+*.tfstate
+*.tfstate.*
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Environment-specific tfvars contain the AWS account ID and admin
+# IAM ARN. Neither is a "secret" in the strict sense (no passwords,
+# no access keys) but they identify the operator and the account,
+# so they're treated as deploy-config not source. Use
+# terraform.tfvars.example as the committed template.
+dev.tfvars
+prod.tfvars
+*.auto.tfvars

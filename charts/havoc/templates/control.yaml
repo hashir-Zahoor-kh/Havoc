@@ -1,0 +1,75 @@
+# havoc-control: HTTP API + CLI backend. One replica is enough — the
+# control plane is stateless apart from Postgres/Redis. Probes hit
+# /healthz on the same port the API serves on (built into the binary,
+# see cmd/havoc-control/server.go).
+{{- if .Values.control.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: havoc-control
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "havoc.componentLabels" (merge (dict "component" "control" "name" "havoc-control") .) | nindent 4 }}
+spec:
+  replicas: {{ .Values.control.replicas }}
+  selector:
+    matchLabels:
+      app: havoc-control
+  template:
+    metadata:
+      labels:
+        {{- include "havoc.componentLabels" (merge (dict "component" "control" "name" "havoc-control") .) | nindent 8 }}
+    spec:
+      serviceAccountName: havoc-control
+      containers:
+        - name: havoc-control
+          image: "{{ .Values.control.image.repository }}:{{ .Values.control.image.tag }}"
+          imagePullPolicy: {{ .Values.control.image.pullPolicy }}
+          args: ["serve"]
+          ports:
+            - containerPort: {{ .Values.control.probes.port }}
+              name: http
+          env:
+            - name: HAVOC_HTTP_ADDR
+              value: ":{{ .Values.control.probes.port }}"
+            - name: HAVOC_KAFKA_BROKERS
+              value: {{ .Values.global.kafkaBrokers | quote }}
+            - name: HAVOC_IN_CLUSTER
+              value: "true"
+            - name: HAVOC_BLAST_RADIUS_PCT
+              value: {{ .Values.global.blastRadiusPct | quote }}
+            {{- include "havoc.dataPlaneEnv" . | nindent 12 }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.control.probes.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.control.probes.initialDelaySeconds }}
+            periodSeconds: {{ .Values.control.probes.periodSeconds }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.control.probes.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.control.probes.initialDelaySeconds }}
+            periodSeconds: {{ .Values.control.probes.periodSeconds }}
+          resources:
+            {{- toYaml .Values.control.resources | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: havoc-control
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "havoc.componentLabels" (merge (dict "component" "control" "name" "havoc-control") .) | nindent 4 }}
+spec:
+  type: {{ .Values.control.service.type }}
+  selector:
+    app: havoc-control
+  ports:
+    - name: http
+      port: {{ .Values.control.service.port }}
+      targetPort: http
+      {{- if and (eq .Values.control.service.type "NodePort") .Values.control.service.nodePort }}
+      nodePort: {{ .Values.control.service.nodePort }}
+      {{- end }}
+{{- end }}

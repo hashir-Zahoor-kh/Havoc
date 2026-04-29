@@ -1,0 +1,125 @@
+# Defaults for kind-local development. AWS overrides live in
+# aws.values.yaml. The original raw manifests this chart was
+# distilled from are still in deploy/k8s/ for comparison.
+
+# Globals shared by every component. The agent and recorder pull
+# these into env vars via the templates; control reads them too plus
+# its own service config.
+global:
+  kafkaBrokers: "kafka:29092"
+  redisAddr: "redis:6379"
+  redisPassword: ""
+  postgresDSN: "postgres://havoc:havoc@postgres:5432/havoc?sslmode=disable"
+  blastRadiusPct: 25
+
+# When secrets.enabled is true, the postgres DSN, redis addr, and
+# redis password are pulled from a named Kubernetes Secret instead
+# of the global block. Created out-of-band by `make aws-secrets`
+# (which reads `terraform output`) so credentials never appear in
+# `helm get values` output.
+secrets:
+  enabled: false
+  name: havoc-secrets
+
+# ---------- Control plane ----------
+control:
+  enabled: true
+  replicas: 1
+  image:
+    repository: havoc/havoc-control
+    tag: dev
+    pullPolicy: IfNotPresent
+  service:
+    type: NodePort
+    port: 8080
+    # nodePort: 30080 lines up with kind's extraPortMappings so
+    # localhost:8080 hits the API. Set to null on EKS.
+    nodePort: 30080
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+  probes:
+    # Control already has /healthz built into its API server (see
+    # cmd/havoc-control/server.go). Both probes hit the same path.
+    port: 8080
+    path: /healthz
+    initialDelaySeconds: 5
+    periodSeconds: 10
+
+# ---------- Agent (DaemonSet) ----------
+agent:
+  enabled: true
+  image:
+    repository: havoc/havoc-agent
+    tag: dev
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+  probes:
+    # Agent /healthz + /readyz served by internal/health on a
+    # separate port (default :8081 — distinct from control's :8080).
+    port: 8081
+    livenessPath: /healthz
+    readinessPath: /readyz
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  # Tolerate kind's control-plane taint so an agent lands on every
+  # node, including the control-plane. Drop or override on prod.
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+
+# ---------- Recorder ----------
+recorder:
+  enabled: true
+  replicas: 1
+  image:
+    repository: havoc/havoc-recorder
+    tag: dev
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+  probes:
+    port: 8081
+    livenessPath: /healthz
+    readinessPath: /readyz
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  hpa:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 4
+    targetCPUUtilizationPercentage: 75
+
+# ---------- Filebeat ----------
+filebeat:
+  enabled: true
+  image:
+    repository: docker.elastic.co/beats/filebeat
+    tag: 8.13.4
+    pullPolicy: IfNotPresent
+  elasticsearch:
+    host: elasticsearch
+    port: 9200
+  resources:
+    requests:
+      cpu: 50m
+      memory: 100Mi
+    limits:
+      cpu: 500m
+      memory: 300Mi

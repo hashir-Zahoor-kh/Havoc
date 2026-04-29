@@ -1,0 +1,51 @@
+# AWS overrides on top of values.yaml. Apply with:
+#   helm install havoc charts/havoc -n havoc --create-namespace \
+#     -f charts/havoc/values.yaml -f charts/havoc/aws.values.yaml
+#
+# Image refs point at the ECR repos provisioned in Phase 6a.
+# Postgres/Redis credentials and endpoints come from the
+# `havoc-secrets` Secret, populated by `make aws-secrets` from
+# `terraform output`.
+
+global:
+  # Strimzi-managed Kafka in the `kafka` namespace. The bootstrap
+  # service is created by the operator from the Kafka CR
+  # (deploy/strimzi/kafka.yaml — cluster name `havoc-kafka`):
+  #   <cluster>-kafka-bootstrap.<namespace>:<port>
+  # CoreDNS resolves cross-namespace by default; no NetworkPolicy
+  # in this dev setup is restricting it.
+  kafkaBrokers: "havoc-kafka-kafka-bootstrap.kafka:9092"
+  blastRadiusPct: 25
+  # postgresDSN, redisAddr, redisPassword come from the Secret below.
+
+secrets:
+  enabled: true
+  name: havoc-secrets
+
+control:
+  image:
+    repository: 802531653822.dkr.ecr.us-east-1.amazonaws.com/havoc-control
+    tag: dev
+  service:
+    # No NodePort on EKS — drive the control plane via
+    # `kubectl port-forward svc/havoc-control 8080:8080 -n havoc`.
+    type: ClusterIP
+    nodePort: null
+
+agent:
+  image:
+    repository: 802531653822.dkr.ecr.us-east-1.amazonaws.com/havoc-agent
+    tag: dev
+  # Don't tolerate the control-plane taint on EKS — managed nodes
+  # don't have it, and tolerating prevents nothing.
+  tolerations: []
+
+recorder:
+  image:
+    repository: 802531653822.dkr.ecr.us-east-1.amazonaws.com/havoc-recorder
+    tag: dev
+
+# ELK isn't provisioned on AWS in Phase 6a. Re-enable filebeat once
+# OpenSearch / a self-hosted ELK is wired up in a later phase.
+filebeat:
+  enabled: false

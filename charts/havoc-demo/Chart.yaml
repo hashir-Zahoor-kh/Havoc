@@ -1,0 +1,13 @@
+apiVersion: v2
+name: havoc-demo
+description: |
+  The "checkout" demo workload Havoc attacks. Six replicas of an
+  alpine container with iproute2 + NET_ADMIN so `tc` works for the
+  network_latency action. Lives in its own namespace (havoc-demo)
+  so the blast-radius selector can never accidentally hit the
+  control plane.
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+maintainers:
+  - name: hashir

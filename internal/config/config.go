@@ -37,6 +37,13 @@ type Agent struct {
 	RedisDB        int
 	KubeconfigPath string
 	InCluster      bool
+
+	// HealthAddr is the bind address for the readiness/liveness HTTP
+	// server. Kept distinct from the control-plane API port so this
+	// can run on the same network namespace without clashing in
+	// non-cluster contexts (e.g. a developer running both binaries
+	// locally).
+	HealthAddr string
 }
 
 // Recorder holds the settings required by the havoc-recorder binary.
@@ -47,6 +54,10 @@ type Recorder struct {
 	RedisAddr     string
 	RedisPassword string
 	RedisDB       int
+
+	// HealthAddr is the bind address for the readiness/liveness HTTP
+	// server. See Agent.HealthAddr.
+	HealthAddr string
 }
 
 // Client holds the settings required by the havoc CLI when talking to the
@@ -93,6 +104,7 @@ func LoadAgent() (Agent, error) {
 		RedisPassword:  os.Getenv("HAVOC_REDIS_PASSWORD"),
 		KubeconfigPath: os.Getenv("HAVOC_KUBECONFIG"),
 		InCluster:      getEnvBool("HAVOC_IN_CLUSTER", true),
+		HealthAddr:     getEnv("HAVOC_HEALTH_ADDR", ":8081"),
 	}
 	db, err := parseInt(getEnv("HAVOC_REDIS_DB", "0"))
 	if err != nil {
@@ -113,6 +125,7 @@ func LoadRecorder() (Recorder, error) {
 		PostgresDSN:   getEnv("HAVOC_POSTGRES_DSN", "postgres://havoc:havoc@localhost:5432/havoc?sslmode=disable"),
 		RedisAddr:     getEnv("HAVOC_REDIS_ADDR", "localhost:6379"),
 		RedisPassword: os.Getenv("HAVOC_REDIS_PASSWORD"),
+		HealthAddr:    getEnv("HAVOC_HEALTH_ADDR", ":8081"),
 	}
 	db, err := parseInt(getEnv("HAVOC_REDIS_DB", "0"))
 	if err != nil {

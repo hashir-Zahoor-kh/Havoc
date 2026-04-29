@@ -1,0 +1,68 @@
+# havoc-agent runs as a DaemonSet — one pod per node. NODE_NAME comes
+# from the downward API and drives both the Kafka consumer group and
+# the local-pod self-filter inside the runner. /healthz + /readyz are
+# served on a separate port from the control plane (default :8081).
+#
+# NET_ADMIN: required by the network_latency action so `tc` can
+# install a netem qdisc on the target's eth0.
+{{- if .Values.agent.enabled }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: havoc-agent
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "havoc.componentLabels" (merge (dict "component" "agent" "name" "havoc-agent") .) | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app: havoc-agent
+  template:
+    metadata:
+      labels:
+        {{- include "havoc.componentLabels" (merge (dict "component" "agent" "name" "havoc-agent") .) | nindent 8 }}
+    spec:
+      serviceAccountName: havoc-agent
+      {{- with .Values.agent.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: havoc-agent
+          image: "{{ .Values.agent.image.repository }}:{{ .Values.agent.image.tag }}"
+          imagePullPolicy: {{ .Values.agent.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.agent.probes.port }}
+              name: health
+          securityContext:
+            capabilities:
+              add: ["NET_ADMIN"]
+          env:
+            - name: HAVOC_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: HAVOC_KAFKA_BROKERS
+              value: {{ .Values.global.kafkaBrokers | quote }}
+            - name: HAVOC_KAFKA_GROUP
+              value: "havoc-agent"
+            - name: HAVOC_HEALTH_ADDR
+              value: ":{{ .Values.agent.probes.port }}"
+            - name: HAVOC_IN_CLUSTER
+              value: "true"
+            {{- include "havoc.redisEnv" . | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.agent.probes.livenessPath }}
+              port: health
+            initialDelaySeconds: {{ .Values.agent.probes.initialDelaySeconds }}
+            periodSeconds: {{ .Values.agent.probes.periodSeconds }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.agent.probes.readinessPath }}
+              port: health
+            initialDelaySeconds: {{ .Values.agent.probes.initialDelaySeconds }}
+            periodSeconds: {{ .Values.agent.probes.periodSeconds }}
+          resources:
+            {{- toYaml .Values.agent.resources | nindent 12 }}
+{{- end }}

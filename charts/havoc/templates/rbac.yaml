@@ -1,0 +1,93 @@
+# RBAC for the three Havoc components. Verbatim copy of the Phase 5
+# manifest (deploy/k8s/rbac.yaml), templated only on labels and
+# namespace. The actual permission scopes are unchanged:
+#
+#   - Control plane: list pods cluster-wide for blast-radius pre-pick.
+#     List-only — never delete or exec from the control plane.
+#   - Agent: list/delete pods on its node and exec into them
+#     (cpu_pressure, network_latency).
+#   - Recorder: no API access; default ServiceAccount is enough.
+{{- if .Values.control.enabled }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: havoc-control
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "havoc.componentLabels" (merge (dict "component" "control" "name" "havoc-control") .) | nindent 4 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: havoc-control
+  labels:
+    {{- include "havoc.componentLabels" (merge (dict "component" "control" "name" "havoc-control") .) | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: havoc-control
+  labels:
+    {{- include "havoc.componentLabels" (merge (dict "component" "control" "name" "havoc-control") .) | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: havoc-control
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: havoc-control
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}
+{{- if .Values.agent.enabled }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: havoc-agent
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "havoc.componentLabels" (merge (dict "component" "agent" "name" "havoc-agent") .) | nindent 4 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: havoc-agent
+  labels:
+    {{- include "havoc.componentLabels" (merge (dict "component" "agent" "name" "havoc-agent") .) | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "delete"]
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    verbs: ["create", "get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: havoc-agent
+  labels:
+    {{- include "havoc.componentLabels" (merge (dict "component" "agent" "name" "havoc-agent") .) | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: havoc-agent
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: havoc-agent
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}
+{{- if .Values.recorder.enabled }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: havoc-recorder
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "havoc.componentLabels" (merge (dict "component" "recorder" "name" "havoc-recorder") .) | nindent 4 }}
+{{- end }}

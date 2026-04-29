@@ -1,0 +1,153 @@
+# Filebeat DaemonSet — same shape as deploy/k8s/filebeat.yaml, just
+# templated. Lives inside the kind cluster (not in compose) so it can
+# tail the kubelet container logs at /var/log/pods, where the Havoc
+# binaries' stdout actually appears (compose-side Filebeat couldn't
+# see them — see deploy/README.md for the why).
+{{- if .Values.filebeat.enabled }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: filebeat
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "havoc.componentLabels" (merge (dict "component" "filebeat" "name" "filebeat") .) | nindent 4 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: filebeat
+  labels:
+    {{- include "havoc.componentLabels" (merge (dict "component" "filebeat" "name" "filebeat") .) | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["namespaces", "pods", "nodes"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: filebeat
+  labels:
+    {{- include "havoc.componentLabels" (merge (dict "component" "filebeat" "name" "filebeat") .) | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: filebeat
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: filebeat
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: filebeat-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "havoc.componentLabels" (merge (dict "component" "filebeat" "name" "filebeat") .) | nindent 4 }}
+data:
+  filebeat.yml: |
+    # Kubernetes autodiscover: only emit logs from pods in this
+    # release's namespace. decode_json_fields lifts slog fields
+    # (component, experiment_id, outcome, ...) to top-level fields
+    # searchable in Kibana.
+    filebeat.autodiscover:
+      providers:
+        - type: kubernetes
+          node: ${NODE_NAME}
+          hints.enabled: false
+          templates:
+            - condition:
+                equals:
+                  kubernetes.namespace: {{ .Release.Namespace }}
+              config:
+                - type: container
+                  paths:
+                    - /var/log/containers/*-${data.kubernetes.container.id}.log
+                  processors:
+                    - decode_json_fields:
+                        fields: ["message"]
+                        target: ""
+                        overwrite_keys: true
+                        add_error_key: true
+
+    processors:
+      - add_kubernetes_metadata:
+          host: ${NODE_NAME}
+          matchers:
+            - logs_path:
+                logs_path: "/var/log/containers/"
+
+    output.elasticsearch:
+      hosts: ["{{ .Values.filebeat.elasticsearch.host }}:{{ .Values.filebeat.elasticsearch.port }}"]
+      index: "havoc-%{+yyyy.MM.dd}"
+
+    setup.template.name: "havoc"
+    setup.template.pattern: "havoc-*"
+    setup.ilm.enabled: false
+
+    logging.level: info
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: filebeat
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "havoc.componentLabels" (merge (dict "component" "filebeat" "name" "filebeat") .) | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app: filebeat
+  template:
+    metadata:
+      labels:
+        {{- include "havoc.componentLabels" (merge (dict "component" "filebeat" "name" "filebeat") .) | nindent 8 }}
+    spec:
+      serviceAccountName: filebeat
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: filebeat
+          image: "{{ .Values.filebeat.image.repository }}:{{ .Values.filebeat.image.tag }}"
+          imagePullPolicy: {{ .Values.filebeat.image.pullPolicy }}
+          args: ["-c", "/etc/filebeat.yml", "-e", "-strict.perms=false"]
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          securityContext:
+            runAsUser: 0
+          resources:
+            {{- toYaml .Values.filebeat.resources | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/filebeat.yml
+              subPath: filebeat.yml
+              readOnly: true
+            - name: varlogcontainers
+              mountPath: /var/log/containers
+              readOnly: true
+            - name: varlogpods
+              mountPath: /var/log/pods
+              readOnly: true
+            - name: data
+              mountPath: /usr/share/filebeat/data
+      volumes:
+        - name: config
+          configMap:
+            name: filebeat-config
+            defaultMode: 0640
+        - name: varlogcontainers
+          hostPath:
+            path: /var/log/containers
+        - name: varlogpods
+          hostPath:
+            path: /var/log/pods
+        - name: data
+          emptyDir: {}
+{{- end }}

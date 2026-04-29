@@ -1,0 +1,27 @@
+# Demo workload defaults. Same shape across kind and AWS — alpine
+# images don't need different registries. Bump replicas if you want
+# the blast-radius pre-pick to have more candidates.
+
+checkout:
+  # 4 replicas, not 6 — t3.small worker nodes only allow 11 pods per
+  # node (ENI/IP density limit on this instance type), and the
+  # cluster's existing footprint (kube-system + Strimzi entity-operator
+  # + Havoc control/agent/recorder + EBS CSI controller) leaves
+  # ~5 free pod slots per node = 10 across the 2-node pool. 6
+  # checkout replicas leaves the 6th Pending forever with
+  # "Too many pods". 4 is the largest count that schedules cleanly
+  # while still giving blast-radius pre-pick more than one candidate.
+  # Larger node types (t3.medium, m5.large) would lift this — see
+  # docs.aws.amazon.com/eks/latest/userguide/choosing-instance-type.html
+  replicas: 4
+  image:
+    repository: alpine
+    tag: "3.20"
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 50m
+      memory: 32Mi
+    limits:
+      cpu: 500m
+      memory: 128Mi

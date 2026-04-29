@@ -1,0 +1,16 @@
+apiVersion: v2
+name: havoc
+description: |
+  The Havoc chaos engineering platform: control plane, per-node agent
+  DaemonSet, Kafka-result recorder, and an in-cluster Filebeat
+  DaemonSet shipping logs to Elasticsearch. Install into the `havoc`
+  namespace; the demo workload lives in `havoc-demo` (separate chart).
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - chaos-engineering
+  - kubernetes
+  - kafka
+maintainers:
+  - name: hashir

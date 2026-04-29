@@ -1,0 +1,83 @@
+# havoc-recorder consumes the results topic and lands every result in
+# Postgres. Idempotent on result id, so duplicate deliveries (on
+# rebalance) are safe. HPA scales on CPU — the per-message cost is
+# small but predictable, so CPU is a reasonable proxy for backlog
+# pressure within a single Helm release. Lag-based scaling (KEDA)
+# would be the production answer; out of scope for Phase 6b.
+{{- if .Values.recorder.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: havoc-recorder
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "havoc.componentLabels" (merge (dict "component" "recorder" "name" "havoc-recorder") .) | nindent 4 }}
+spec:
+  # Replicas only set when HPA is disabled — when HPA owns the field,
+  # touching replicas here would fight the controller every reconcile.
+  {{- if not .Values.recorder.hpa.enabled }}
+  replicas: {{ .Values.recorder.replicas }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: havoc-recorder
+  template:
+    metadata:
+      labels:
+        {{- include "havoc.componentLabels" (merge (dict "component" "recorder" "name" "havoc-recorder") .) | nindent 8 }}
+    spec:
+      serviceAccountName: havoc-recorder
+      containers:
+        - name: havoc-recorder
+          image: "{{ .Values.recorder.image.repository }}:{{ .Values.recorder.image.tag }}"
+          imagePullPolicy: {{ .Values.recorder.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.recorder.probes.port }}
+              name: health
+          env:
+            - name: HAVOC_KAFKA_BROKERS
+              value: {{ .Values.global.kafkaBrokers | quote }}
+            - name: HAVOC_KAFKA_GROUP
+              value: "havoc-recorder"
+            - name: HAVOC_HEALTH_ADDR
+              value: ":{{ .Values.recorder.probes.port }}"
+            {{- include "havoc.dataPlaneEnv" . | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.recorder.probes.livenessPath }}
+              port: health
+            initialDelaySeconds: {{ .Values.recorder.probes.initialDelaySeconds }}
+            periodSeconds: {{ .Values.recorder.probes.periodSeconds }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.recorder.probes.readinessPath }}
+              port: health
+            initialDelaySeconds: {{ .Values.recorder.probes.initialDelaySeconds }}
+            periodSeconds: {{ .Values.recorder.probes.periodSeconds }}
+          resources:
+            {{- toYaml .Values.recorder.resources | nindent 12 }}
+{{- if .Values.recorder.hpa.enabled }}
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: havoc-recorder
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "havoc.componentLabels" (merge (dict "component" "recorder" "name" "havoc-recorder") .) | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: havoc-recorder
+  minReplicas: {{ .Values.recorder.hpa.minReplicas }}
+  maxReplicas: {{ .Values.recorder.hpa.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.recorder.hpa.targetCPUUtilizationPercentage }}
+{{- end }}
+{{- end }}

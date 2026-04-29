@@ -1,0 +1,56 @@
+# Six-replica checkout Deployment. The image is alpine sleeping in a
+# loop — small, has `sh` for cpu_pressure, and we install iproute2 in
+# an init step so `tc` is available for network_latency.
+#
+# NET_ADMIN is required for `tc qdisc` to add a netem qdisc on eth0.
+# This is a deliberate prod-unsafe choice for a demo workload —
+# production targets should not run with NET_ADMIN; the brief
+# acknowledges network_latency requires co-operation from the workload.
+#
+# topologySpreadConstraints spreads pods across nodes so blast-radius
+# pre-pick has work to do.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkout
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: checkout
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+    app: checkout
+spec:
+  replicas: {{ .Values.checkout.replicas }}
+  selector:
+    matchLabels:
+      app: checkout
+  template:
+    metadata:
+      labels:
+        app: checkout
+        app.kubernetes.io/name: checkout
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: checkout
+      containers:
+        - name: app
+          image: "{{ .Values.checkout.image.repository }}:{{ .Values.checkout.image.tag }}"
+          imagePullPolicy: {{ .Values.checkout.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              apk add --no-cache iproute2 >/dev/null
+              echo "checkout ready on $(hostname)"
+              while true; do sleep 3600; done
+          securityContext:
+            capabilities:
+              add: ["NET_ADMIN"]
+          resources:
+            {{- toYaml .Values.checkout.resources | nindent 12 }}
