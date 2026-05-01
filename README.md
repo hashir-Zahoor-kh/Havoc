@@ -1,6 +1,6 @@
 # Havoc
 
-A controlled chaos engineering platform for Kubernetes. Havoc schedules experiments — kill a pod, inject latency, burn CPU — and executes them through lightweight agents running on every cluster node, behind hard safety guardrails that prevent an experiment from escaping its intended blast radius. Every experiment is recorded in an auditable, searchable history.
+A controlled chaos engineering platform for Kubernetes. Havoc schedules experiments, kill a pod, inject latency, burn CPU, and executes them through lightweight agents running on every cluster node, behind hard safety guardrails that prevent an experiment from escaping its intended blast radius. Every experiment is recorded in an auditable, searchable history.
 
 This is a portfolio project. It is production-shaped, not production-sized: a working end-to-end demo of a distributed command-and-control architecture.
 
