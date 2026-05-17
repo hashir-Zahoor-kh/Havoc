@@ -7,6 +7,17 @@
   border-radius: 0 !important;
 }
 
+/* pulse dot needs to remain a circle */
+.pulse-dot {
+  border-radius: 50% !important;
+}
+
+@media (max-width: 768px) {
+  .desktop-nav { display: none !important; }
+  .mobile-nav { display: flex !important; }
+  .github-btn-desktop { display: none !important; }
+}
+
 body {
   margin: 0;
   background: #000000;

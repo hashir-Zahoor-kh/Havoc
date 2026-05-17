@@ -1,11 +1,28 @@
+import Navbar from './components/Navbar'
+
+const SECTION_STYLE = {
+  minHeight: '100vh',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  fontFamily: '"Courier New", Courier, monospace',
+  color: '#444',
+  fontSize: '0.75rem',
+  letterSpacing: '0.1em',
+  textTransform: 'uppercase',
+  borderBottom: '1px solid #0f0f0f',
+}
+
 export default function App() {
   return (
-    <div style={{ background: '#000', color: '#fff', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Courier New, Courier, monospace' }}>
-      <div style={{ textAlign: 'center' }}>
-        <h1 style={{ fontFamily: '"Bebas Neue", cursive', fontSize: 'clamp(5rem, 20vw, 14rem)', margin: 0, letterSpacing: '0.05em', lineHeight: 1 }}>HAVOC</h1>
-        <p style={{ color: '#caff00', letterSpacing: '0.15em', textTransform: 'uppercase', fontSize: '0.85rem', marginTop: '1.5rem' }}>
-          Stage 1 scaffold complete — dev server running
-        </p>
+    <div style={{ background: '#000000', color: '#ffffff', minHeight: '100vh' }}>
+      <Navbar />
+      <div style={{ paddingTop: '56px' }}>
+        <section id="overview" style={SECTION_STYLE}>Overview — coming in Stage 3</section>
+        <section id="architecture" style={SECTION_STYLE}>Architecture — coming in Stage 4</section>
+        <section id="demo" style={SECTION_STYLE}>Demo — coming in Stage 5</section>
+        <section id="safety" style={SECTION_STYLE}>Safety — coming in Stage 6</section>
+        <section id="about" style={SECTION_STYLE}>About — coming in Stage 8</section>
       </div>
     </div>
   )
