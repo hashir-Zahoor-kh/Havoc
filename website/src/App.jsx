@@ -3,6 +3,7 @@ import Hero from './components/Hero'
 import Architecture from './components/Architecture'
 import Demo from './components/Demo'
 import Safety from './components/Safety'
+import Capabilities from './components/Capabilities'
 
 const STUB = {
   minHeight: '100vh',
@@ -26,6 +27,7 @@ export default function App() {
         <Architecture />
         <Demo />
         <Safety />
+        <Capabilities />
         <section id="about" style={STUB}>About — coming in Stage 8</section>
       </div>
     </div>
