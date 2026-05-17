@@ -2,6 +2,7 @@ import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import Architecture from './components/Architecture'
 import Demo from './components/Demo'
+import Safety from './components/Safety'
 
 const STUB = {
   minHeight: '100vh',
@@ -24,7 +25,7 @@ export default function App() {
         <Hero />
         <Architecture />
         <Demo />
-        <section id="safety" style={STUB}>Safety — coming in Stage 6</section>
+        <Safety />
         <section id="about" style={STUB}>About — coming in Stage 8</section>
       </div>
     </div>
