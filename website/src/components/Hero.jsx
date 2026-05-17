@@ -172,7 +172,7 @@ function RunBtn({ onClick }) {
 function GithubBtn() {
   return (
     <a
-      href="https://github.com/hashirzahoor"
+      href="https://github.com/hashir-zahoor-kh"
       target="_blank"
       rel="noopener noreferrer"
       style={{
