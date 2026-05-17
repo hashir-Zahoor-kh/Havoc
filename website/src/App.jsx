@@ -1,5 +1,6 @@
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
+import Architecture from './components/Architecture'
 
 const STUB = {
   minHeight: '100vh',
@@ -20,7 +21,7 @@ export default function App() {
       <Navbar />
       <div style={{ paddingTop: '56px' }}>
         <Hero />
-        <section id="architecture" style={STUB}>Architecture — coming in Stage 4</section>
+        <Architecture />
         <section id="demo" style={STUB}>Demo — coming in Stage 5</section>
         <section id="safety" style={STUB}>Safety — coming in Stage 6</section>
         <section id="about" style={STUB}>About — coming in Stage 8</section>

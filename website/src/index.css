@@ -58,3 +58,8 @@ html {
 .blink {
   animation: blink-cursor 1s step-end infinite;
 }
+
+@keyframes flow-along {
+  from { stroke-dashoffset: 28; }
+  to   { stroke-dashoffset: 0; }
+}
