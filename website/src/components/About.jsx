@@ -23,7 +23,7 @@ export default function About() {
           </motion.div>
 
           {/* Two-column layout */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '4rem', paddingBottom: '6rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(320px, 100%), 1fr))', gap: '4rem', paddingBottom: '6rem' }}>
 
             {/* Left — description */}
             <motion.div

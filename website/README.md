@@ -1,16 +1,57 @@
-# React + Vite
+# HAVOC — Portfolio Website
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interactive portfolio showcase for [Havoc](../README.md), a production-depth Kubernetes chaos engineering platform. Built with Vite + React, Tailwind CSS, Framer Motion, and Recharts.
 
-Currently, two official plugins are available:
+## What's inside
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+| Section | Description |
+|---|---|
+| **Hero** | Animated node-grid background simulating a pod kill cycle |
+| **Architecture** | Live data-flow diagram with animated Kafka packet arrows; click any component for details |
+| **Demo** | Interactive experiment control panel — configure, run, and watch guardrail checks and pod state transitions |
+| **Guardrails** | Four interactive safety cards: blast radius slider, Redis lock animation, kill switch, and blackout window calendar |
+| **Capabilities** | Chaos action cards, full tech stack table, and deployment target cards |
+| **About** | Project description, stats, and contact links |
 
-## React Compiler
+## Run locally
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm install
+npm run dev
+```
 
-## Expanding the ESLint configuration
+Open [http://localhost:5173](http://localhost:5173).
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Build
+
+```bash
+npm run build      # outputs to dist/
+npm run preview    # preview the production build locally
+```
+
+## Deploy to Vercel
+
+### One-click (recommended)
+
+1. Push this repo to GitHub
+2. Go to [vercel.com](https://vercel.com) → **Add New Project**
+3. Import your repo, set **Root Directory** to `website`
+4. Vercel auto-detects Vite — click **Deploy**
+
+`vercel.json` is already configured to handle client-side routing.
+
+### Vercel CLI
+
+```bash
+npm i -g vercel
+cd website
+vercel --prod
+```
+
+## Tech stack
+
+- **Vite** + **React** (functional components, hooks)
+- **Tailwind CSS v3** with custom design tokens
+- **Framer Motion** for scroll-triggered and entrance animations
+- **Recharts** (available, dark-themed)
+- Zero backend — all interactivity is client-side mock data

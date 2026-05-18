@@ -16,7 +16,18 @@
   .desktop-nav { display: none !important; }
   .mobile-nav { display: flex !important; }
   .github-btn-desktop { display: none !important; }
+  .status-desktop { display: none !important; }
 }
+
+/* Tight mobile — clamp section padding */
+@media (max-width: 480px) {
+  section { padding-left: 1rem !important; padding-right: 1rem !important; }
+  footer  { padding-left: 1rem !important; padding-right: 1rem !important; }
+  header nav { padding: 0 1rem !important; }
+}
+
+/* Prevent any horizontal overflow */
+html, body { overflow-x: hidden; max-width: 100vw; }
 
 body {
   margin: 0;

@@ -51,7 +51,7 @@ export default function Navbar() {
         </a>
 
         {/* Center nav links */}
-        <ul style={{
+        <ul className="desktop-nav" style={{
           display: 'flex',
           alignItems: 'center',
           gap: '2rem',
@@ -71,7 +71,7 @@ export default function Navbar() {
         {/* Right side */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexShrink: 0 }}>
           {/* Status indicator */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div className="status-desktop" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <span
               className="pulse-dot"
               style={{

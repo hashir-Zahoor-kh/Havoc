@@ -32,7 +32,7 @@ export default function Safety() {
           <h2 style={heading}>GUARDRAILS</h2>
         </motion.div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(480px, 1fr))', gap: '1.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(480px, 100%), 1fr))', gap: '1.5rem' }}>
           <BlastRadiusCard />
           <LockCard />
           <KillSwitchCard />

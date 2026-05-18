@@ -47,7 +47,7 @@ export default function Capabilities() {
           <p style={sectionLabel}>CHAOS ACTIONS</p>
         </motion.div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1px', marginBottom: '5rem', border: '1px solid #1a1a1a' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: '1px', marginBottom: '5rem', border: '1px solid #1a1a1a' }}>
           {chaosActions.map((action, i) => (
             <ActionCard key={action.name} action={action} delay={i * 0.07} />
           ))}
@@ -100,7 +100,7 @@ export default function Capabilities() {
           viewport={{ once: true }} transition={{ duration: 0.3, ease: 'easeOut' }}
         >
           <p style={{ ...sectionLabel, marginBottom: '1.75rem' }}>DEPLOYMENT TARGETS</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(320px, 100%), 1fr))', gap: '1.5rem' }}>
             {DEPLOYMENT_TARGETS.map((target, i) => (
               <DeployCard key={target.name} target={target} delay={i * 0.08} />
             ))}
