@@ -77,7 +77,7 @@ function BlastRadiusCard() {
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.6rem', fontFamily: '"Courier New",monospace', fontSize: '0.63rem', letterSpacing: '0.1em' }}>
-        <span style={{ color: '#555' }}>{affected} / {TOTAL_PODS} pods affected</span>
+        <span style={{ color: '#888' }}>{affected} / {TOTAL_PODS} pods affected</span>
         <span style={{ color: rejected ? '#ff3333' : '#caff00' }}>{radius}%</span>
       </div>
 
@@ -151,7 +151,7 @@ function LockCard() {
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               transition={{ duration: 0.25 }}
             >
-              <span style={{ color: '#555' }}>DEL havoc:active:checkout</span>
+              <span style={{ color: '#888' }}>DEL havoc:active:checkout</span>
               <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <span style={{ width: '6px', height: '6px', background: '#333', borderRadius: '50%', display: 'inline-block' }} />
                 <span style={{ color: '#444', letterSpacing: '0.1em', fontSize: '0.65rem' }}>LOCK RELEASED</span>
@@ -206,8 +206,8 @@ function KillSwitchCard() {
             >
               <div>
                 <span style={{ color: '#fff', letterSpacing: '0.08em' }}>{exp.action}</span>
-                <span style={{ color: '#444', margin: '0 0.5rem' }}>—</span>
-                <span style={{ color: '#666' }}>{exp.target}</span>
+                <span style={{ color: '#666', margin: '0 0.5rem' }}>—</span>
+                <span style={{ color: '#999' }}>{exp.target}</span>
               </div>
               <span style={{ color, letterSpacing: '0.1em', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                 {exp.status === 'RUNNING' && (
@@ -350,4 +350,4 @@ function GuardrailCard({ title, tag, children }) {
 /* ── Shared styles ──────────────────────────────────────────────────── */
 const eyebrow = { fontFamily: '"Courier New",Courier,monospace', fontSize: '0.7rem', letterSpacing: '0.18em', color: '#caff00', textTransform: 'uppercase', margin: '0 0 0.6rem' }
 const heading  = { fontFamily: '"Bebas Neue",cursive', fontSize: 'clamp(3rem,8vw,5.5rem)', color: '#ffffff', margin: 0, letterSpacing: '0.04em', lineHeight: 1 }
-const desc     = { fontFamily: '"Courier New",monospace', fontSize: '0.72rem', lineHeight: 1.7, color: '#555', margin: '0 0 0.25rem' }
+const desc     = { fontFamily: '"Courier New",monospace', fontSize: '0.84rem', lineHeight: 1.8, color: '#999', margin: '0 0 0.25rem' }

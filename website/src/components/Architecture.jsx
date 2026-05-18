@@ -197,7 +197,7 @@ export default function Architecture() {
                   {selectedComp.tag}
                 </span>
               </div>
-              <p style={{ fontFamily: '"Courier New",Courier,monospace', fontSize: '0.76rem', lineHeight: 1.75, color: '#666666', margin: 0 }}>
+              <p style={{ fontFamily: '"Courier New",Courier,monospace', fontSize: '0.86rem', lineHeight: 1.85, color: '#999', margin: 0 }}>
                 {selectedComp.description}
               </p>
             </div>
@@ -205,7 +205,7 @@ export default function Architecture() {
               onClick={() => setSelected(null)}
               style={{ background: 'none', border: 'none', color: '#444', cursor: 'pointer', fontFamily: '"Courier New",Courier,monospace', fontSize: '0.65rem', letterSpacing: '0.1em', flexShrink: 0, padding: 0 }}
               onMouseEnter={e => { e.currentTarget.style.color = '#fff' }}
-              onMouseLeave={e => { e.currentTarget.style.color = '#444' }}
+              onMouseLeave={e => { e.currentTarget.style.color = '#666' }}
             >
               [CLOSE]
             </button>

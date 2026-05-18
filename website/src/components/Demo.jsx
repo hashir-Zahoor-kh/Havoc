@@ -193,14 +193,14 @@ export default function Demo() {
             <p style={panelLabel}>// EXPERIMENT OUTPUT</p>
 
             {runState === 'idle' && (
-              <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.7rem', color: '#333', letterSpacing: '0.1em' }}>
+              <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.8rem', color: '#888', letterSpacing: '0.1em' }}>
                 AWAITING INPUT...
               </p>
             )}
 
             {/* Guardrail checks */}
             {(runState === 'checking' || runState === 'rejected' || runState === 'running' || runState === 'completed') && (
-              <div style={{ marginBottom: '1.5rem', fontFamily: '"Courier New",monospace', fontSize: '0.72rem' }}>
+              <div style={{ marginBottom: '1.5rem', fontFamily: '"Courier New",monospace', fontSize: '0.82rem' }}>
                 {CHECKS.slice(0, visibleChecks).map((c, i) => {
                   const isReject = i === 0 && runState === 'rejected'
                   return (
@@ -211,7 +211,7 @@ export default function Demo() {
                       transition={{ duration: 0.2, ease: 'easeOut' }}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem', gap: '0.5rem' }}
                     >
-                      <span style={{ color: '#555', whiteSpace: 'nowrap' }}>{'>'} {c.label}</span>
+                      <span style={{ color: '#999', whiteSpace: 'nowrap' }}>{'>'} {c.label}</span>
                       <span style={{ color: isReject ? '#ff3333' : '#00ff88', whiteSpace: 'nowrap', flexShrink: 0 }}>
                         {isReject ? '[REJECTED]' : `${c.tag} ${c.icon}`}
                       </span>
@@ -237,7 +237,7 @@ export default function Demo() {
                 transition={{ duration: 0.2 }}
                 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}
               >
-                <span style={{ fontFamily: '"Courier New",monospace', fontSize: '0.6rem', color: '#444', letterSpacing: '0.12em' }}>STATUS</span>
+                <span style={{ fontFamily: '"Courier New",monospace', fontSize: '0.6rem', color: '#666', letterSpacing: '0.12em' }}>STATUS</span>
                 <span style={{
                   fontFamily: '"Courier New",monospace', fontSize: '0.78rem', letterSpacing: '0.14em',
                   color: EXP_STATE_COLORS[expState],
@@ -256,7 +256,7 @@ export default function Demo() {
                 transition={{ duration: 0.25 }}
                 style={{ marginBottom: '1.5rem' }}
               >
-                <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.6rem', color: '#444', letterSpacing: '0.12em', margin: '0 0 0.75rem', textTransform: 'uppercase' }}>
+                <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.6rem', color: '#666', letterSpacing: '0.12em', margin: '0 0 0.75rem', textTransform: 'uppercase' }}>
                   POD GRID — {labelSelector}
                 </p>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
@@ -271,7 +271,7 @@ export default function Demo() {
                       }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', marginBottom: '0.25rem' }}>
                           <span style={{ width: '5px', height: '5px', background: colors.dot, borderRadius: '50%', flexShrink: 0, display: 'inline-block', transition: 'background 300ms' }} />
-                          <span style={{ fontFamily: '"Courier New",monospace', fontSize: '0.5rem', color: '#555', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <span style={{ fontFamily: '"Courier New",monospace', fontSize: '0.5rem', color: '#888', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {pod.name}
                           </span>
                         </div>
@@ -301,7 +301,7 @@ export default function Demo() {
                   ['DURATION',      resultCard.duration],
                 ].map(([k, v]) => (
                   <div key={k} style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: '0.5rem', marginBottom: '0.35rem' }}>
-                    <span style={{ fontFamily: '"Courier New",monospace', fontSize: '0.62rem', color: '#444', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{k}</span>
+                    <span style={{ fontFamily: '"Courier New",monospace', fontSize: '0.62rem', color: '#666', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{k}</span>
                     <span style={{ fontFamily: '"Courier New",monospace', fontSize: '0.62rem', color: k === 'STATUS' ? '#00ff88' : '#ffffff', letterSpacing: '0.06em' }}>{v}</span>
                   </div>
                 ))}
@@ -318,7 +318,7 @@ export default function Demo() {
               <thead>
                 <tr style={{ borderBottom: '1px solid #1a1a1a' }}>
                   {['ID', 'ACTION', 'TARGET', 'STATUS', 'TIMESTAMP', 'DURATION'].map(h => (
-                    <th key={h} style={{ padding: '0.65rem 1rem', textAlign: 'left', letterSpacing: '0.12em', color: '#444', fontWeight: 'normal', whiteSpace: 'nowrap' }}>{h}</th>
+                    <th key={h} style={{ padding: '0.65rem 1rem', textAlign: 'left', letterSpacing: '0.12em', color: '#666', fontWeight: 'normal', whiteSpace: 'nowrap' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -351,7 +351,7 @@ function HistoryRow({ exp, isExpanded, onToggle }) {
         onMouseEnter={e => { if (!isExpanded) e.currentTarget.style.background = '#080808' }}
         onMouseLeave={e => { if (!isExpanded) e.currentTarget.style.background = 'transparent' }}
       >
-        <td style={td}><span style={{ color: '#555' }}>{exp.id}</span></td>
+        <td style={td}><span style={{ color: '#888' }}>{exp.id}</span></td>
         <td style={td}><span style={{ color: '#fff', letterSpacing: '0.08em' }}>{exp.action}</span></td>
         <td style={td}><span style={{ color: '#888' }}>{exp.target}</span></td>
         <td style={td}>
@@ -360,7 +360,7 @@ function HistoryRow({ exp, isExpanded, onToggle }) {
             <span style={{ color: statusColor, letterSpacing: '0.08em' }}>{exp.status}</span>
           </span>
         </td>
-        <td style={td}><span style={{ color: '#555' }}>{exp.timestamp}</span></td>
+        <td style={td}><span style={{ color: '#888' }}>{exp.timestamp}</span></td>
         <td style={td}><span style={{ color: '#888' }}>{exp.duration}</span></td>
       </tr>
       {isExpanded && (
@@ -376,7 +376,7 @@ function HistoryRow({ exp, isExpanded, onToggle }) {
                 ['DURATION',      exp.duration],
               ].map(([k, v]) => (
                 <div key={k}>
-                  <span style={{ display: 'block', fontFamily: '"Courier New",monospace', fontSize: '0.55rem', color: '#444', letterSpacing: '0.1em', marginBottom: '0.15rem' }}>{k}</span>
+                  <span style={{ display: 'block', fontFamily: '"Courier New",monospace', fontSize: '0.55rem', color: '#666', letterSpacing: '0.1em', marginBottom: '0.15rem' }}>{k}</span>
                   <span style={{ fontFamily: '"Courier New",monospace', fontSize: '0.62rem', color: k === 'STATUS' ? ({ COMPLETED: '#00ff88', ABORTED: '#ff3333', RUNNING: '#caff00' }[v] || '#fff') : '#fff' }}>{v}</span>
                 </div>
               ))}
@@ -397,7 +397,7 @@ function ActionSelect({ value, onChange }) {
         style={{ ...inputStyle, width: '100%', textAlign: 'left', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
       >
         <span>{value}</span>
-        <span style={{ color: '#444' }}>▾</span>
+        <span style={{ color: '#666' }}>▾</span>
       </button>
       {open && (
         <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: '#0a0a0a', border: '1px solid #333', zIndex: 20 }}>
@@ -421,7 +421,7 @@ function ActionSelect({ value, onChange }) {
 function Field({ label, accent, children }) {
   return (
     <div style={{ marginBottom: '1.25rem' }}>
-      <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.62rem', letterSpacing: '0.13em', color: '#555', textTransform: 'uppercase', margin: '0 0 0.5rem' }}>
+      <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.7rem', letterSpacing: '0.13em', color: '#777', textTransform: 'uppercase', margin: '0 0 0.5rem' }}>
         {label}
         {accent && <span style={{ color: '#caff00' }}>{accent}</span>}
       </p>

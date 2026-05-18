@@ -158,7 +158,7 @@ function ActionCard({ action, delay }) {
       <div style={{ width: '2rem', height: '1px', background: hovered ? accent : '#222', marginBottom: '1rem', transition: 'background 150ms, width 150ms' }} />
 
       {/* Description */}
-      <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.72rem', lineHeight: 1.75, color: '#555', margin: 0 }}>
+      <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.84rem', lineHeight: 1.82, color: '#999', margin: 0 }}>
         {action.description}
       </p>
     </motion.div>
@@ -186,7 +186,7 @@ function DeployCard({ target, delay }) {
         position: 'absolute', top: '1rem', right: '1rem',
         fontFamily: '"Courier New",monospace', fontSize: '0.55rem',
         letterSpacing: '0.1em',
-        color: isProd ? '#caff00' : '#555',
+        color: isProd ? '#caff00' : '#777',
         border: `1px solid ${isProd ? '#2a3300' : '#1a1a1a'}`,
         padding: '0.15rem 0.5rem', textTransform: 'uppercase',
       }}>
@@ -201,7 +201,7 @@ function DeployCard({ target, delay }) {
         {target.name}
       </h3>
 
-      <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.72rem', lineHeight: 1.75, color: '#555', margin: '0 0 1.25rem' }}>
+      <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.84rem', lineHeight: 1.82, color: '#999', margin: '0 0 1.25rem' }}>
         {target.detail}
       </p>
 

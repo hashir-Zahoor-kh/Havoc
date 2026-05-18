@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 
-const GITHUB_URL = 'https://github.com/hashir-zahoor-kh'
-const EMAIL      = 'hashirzahoor74@icloud.com'
-const NAME       = 'Hashir Zahoor ur Rahman'
+const GITHUB_URL   = 'https://github.com/hashir-zahoor-kh'
+const LINKEDIN_URL = 'https://www.linkedin.com/in/hashirzahoor'
+const EMAIL        = 'hashirzahoor74@icloud.com'
+const NAME         = 'Hashir Zahoor ur Rahman'
 
 export default function About() {
   return (
@@ -42,9 +43,9 @@ export default function About() {
                 is injected.
               </p>
               <p style={{ ...bodyText, marginTop: '1.25rem' }}>
-                It was designed to be deployable both locally with kind and on AWS EKS, proving
-                the same abstractions work across environments without code changes — a hallmark
-                of well-designed platform engineering.
+                The same Go binaries and Helm charts run on kind locally and AWS EKS in
+                production — only the environment values files differ between targets, not
+                the application code itself.
               </p>
 
               {/* Stat strip */}
@@ -66,7 +67,7 @@ export default function About() {
                     }}
                   >
                     <div style={{ fontFamily: '"Bebas Neue",cursive', fontSize: '2.5rem', color: '#caff00', lineHeight: 1 }}>{num}</div>
-                    <div style={{ fontFamily: '"Courier New",monospace', fontSize: '0.55rem', letterSpacing: '0.12em', color: '#444', textTransform: 'uppercase', marginTop: '0.3rem' }}>{label}</div>
+                    <div style={{ fontFamily: '"Courier New",monospace', fontSize: '0.6rem', letterSpacing: '0.12em', color: '#666', textTransform: 'uppercase', marginTop: '0.3rem' }}>{label}</div>
                   </div>
                 ))}
               </div>
@@ -119,11 +120,26 @@ export default function About() {
                       {GITHUB_URL.replace('https://', '')}
                     </a>
                   </ContactRow>
+
+                  {/* LinkedIn */}
+                  <ContactRow label="LINKEDIN">
+                    <a
+                      href={LINKEDIN_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={contactLink}
+                      onMouseEnter={e => { e.currentTarget.style.color = '#caff00' }}
+                      onMouseLeave={e => { e.currentTarget.style.color = '#ffffff' }}
+                    >
+                      {LINKEDIN_URL.replace('https://', '')}
+                    </a>
+                  </ContactRow>
                 </div>
 
                 <div style={{ display: 'flex', gap: '0.75rem', marginTop: '2rem', flexWrap: 'wrap' }}>
                   <LinkButton href={`mailto:${EMAIL}`} label="SEND EMAIL" />
                   <LinkButton href={GITHUB_URL} label="VIEW GITHUB" external />
+                  <LinkButton href={LINKEDIN_URL} label="LINKEDIN" external />
                 </div>
 
               </div>
@@ -142,8 +158,8 @@ export default function About() {
                   </span>
                 </div>
                 <div>
-                  <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.72rem', color: '#ffffff', margin: 0, letterSpacing: '0.06em' }}>{NAME}</p>
-                  <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.6rem', color: '#444', margin: '0.15rem 0 0', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Platform Engineer</p>
+                  <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.82rem', color: '#ffffff', margin: 0, letterSpacing: '0.06em' }}>{NAME}</p>
+                  <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.65rem', color: '#666', margin: '0.15rem 0 0', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Platform Engineer</p>
                 </div>
               </div>
             </motion.div>
@@ -206,6 +222,6 @@ function LinkButton({ href, label, external }) {
 
 const eyebrow    = { fontFamily: '"Courier New",Courier,monospace', fontSize: '0.7rem', letterSpacing: '0.18em', color: '#caff00', textTransform: 'uppercase', margin: '0 0 0.6rem' }
 const heading    = { fontFamily: '"Bebas Neue",cursive', fontSize: 'clamp(3rem,8vw,5.5rem)', color: '#ffffff', margin: 0, letterSpacing: '0.04em', lineHeight: 1 }
-const bodyText   = { fontFamily: '"Courier New",monospace', fontSize: '0.76rem', lineHeight: 1.8, color: '#555', margin: 0 }
-const contactLink = { fontFamily: '"Courier New",monospace', fontSize: '0.72rem', color: '#ffffff', textDecoration: 'none', letterSpacing: '0.04em', transition: 'color 150ms ease-out' }
-const footerText  = { fontFamily: '"Courier New",monospace', fontSize: '0.6rem', letterSpacing: '0.12em', color: '#333', textTransform: 'uppercase' }
+const bodyText   = { fontFamily: '"Courier New",monospace', fontSize: '0.88rem', lineHeight: 1.85, color: '#999', margin: 0 }
+const contactLink = { fontFamily: '"Courier New",monospace', fontSize: '0.82rem', color: '#ffffff', textDecoration: 'none', letterSpacing: '0.04em', transition: 'color 150ms ease-out' }
+const footerText  = { fontFamily: '"Courier New",monospace', fontSize: '0.65rem', letterSpacing: '0.12em', color: '#555', textTransform: 'uppercase' }

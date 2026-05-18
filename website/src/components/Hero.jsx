@@ -78,9 +78,9 @@ export default function Hero() {
         }}>
           <p style={{
             fontFamily: '"Courier New", Courier, monospace',
-            fontSize: '0.82rem',
-            lineHeight: 1.75,
-            color: '#666666',
+            fontSize: '0.92rem',
+            lineHeight: 1.85,
+            color: '#999999',
             margin: 0,
           }}>
             A production-depth Kubernetes chaos engineering platform that injects
@@ -89,9 +89,9 @@ export default function Hero() {
           </p>
           <p style={{
             fontFamily: '"Courier New", Courier, monospace',
-            fontSize: '0.82rem',
-            lineHeight: 1.75,
-            color: '#666666',
+            fontSize: '0.92rem',
+            lineHeight: 1.85,
+            color: '#999999',
             margin: '0.6rem 0 0',
           }}>
             Four safety guardrails enforce blast radius limits, distributed locks,
