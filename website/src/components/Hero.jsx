@@ -50,7 +50,7 @@ export default function Hero() {
         {/* Eyebrow label */}
         <motion.p {...fadeUp(0)} style={{
           fontFamily: '"Courier New", Courier, monospace',
-          fontSize: '0.7rem',
+          fontSize: '0.83rem',
           letterSpacing: '0.2em',
           textTransform: 'uppercase',
           color: '#caff00',
@@ -78,7 +78,7 @@ export default function Hero() {
         }}>
           <p style={{
             fontFamily: '"Courier New", Courier, monospace',
-            fontSize: '0.92rem',
+            fontSize: '1.09rem',
             lineHeight: 1.85,
             color: '#999999',
             margin: 0,
@@ -89,7 +89,7 @@ export default function Hero() {
           </p>
           <p style={{
             fontFamily: '"Courier New", Courier, monospace',
-            fontSize: '0.92rem',
+            fontSize: '1.09rem',
             lineHeight: 1.85,
             color: '#999999',
             margin: '0.6rem 0 0',
@@ -121,7 +121,7 @@ export default function Hero() {
         }}>
           <span style={{
             fontFamily: '"Courier New", Courier, monospace',
-            fontSize: '0.6rem',
+            fontSize: '0.71rem',
             letterSpacing: '0.18em',
             textTransform: 'uppercase',
             color: '#ffffff',
@@ -143,7 +143,7 @@ function RunBtn({ onClick }) {
       onClick={onClick}
       style={{
         fontFamily: '"Courier New", Courier, monospace',
-        fontSize: '0.75rem',
+        fontSize: '0.89rem',
         letterSpacing: '0.13em',
         textTransform: 'uppercase',
         background: '#caff00',
@@ -177,7 +177,7 @@ function GithubBtn() {
       rel="noopener noreferrer"
       style={{
         fontFamily: '"Courier New", Courier, monospace',
-        fontSize: '0.75rem',
+        fontSize: '0.89rem',
         letterSpacing: '0.13em',
         textTransform: 'uppercase',
         background: 'transparent',

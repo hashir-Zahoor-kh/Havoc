@@ -103,7 +103,7 @@ export default function Architecture() {
           transition={{ duration: 0.3, ease: 'easeOut' }}
           style={{ marginBottom: '4rem' }}
         >
-          <p style={{ fontFamily: '"Courier New",Courier,monospace', fontSize: '0.7rem', letterSpacing: '0.18em', color: '#caff00', textTransform: 'uppercase', margin: '0 0 0.6rem' }}>
+          <p style={{ fontFamily: '"Courier New",Courier,monospace', fontSize: '0.83rem', letterSpacing: '0.18em', color: '#caff00', textTransform: 'uppercase', margin: '0 0 0.6rem' }}>
             // HOW IT WORKS
           </p>
           <h2 style={{ fontFamily: '"Bebas Neue",cursive', fontSize: 'clamp(3rem,8vw,5.5rem)', color: '#ffffff', margin: 0, letterSpacing: '0.04em', lineHeight: 1 }}>
@@ -190,20 +190,20 @@ export default function Architecture() {
           >
             <div style={{ flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
-                <span style={{ fontFamily: '"Courier New",Courier,monospace', fontSize: '0.78rem', letterSpacing: '0.12em', color: '#ffffff', textTransform: 'uppercase' }}>
+                <span style={{ fontFamily: '"Courier New",Courier,monospace', fontSize: '0.92rem', letterSpacing: '0.12em', color: '#ffffff', textTransform: 'uppercase' }}>
                   {selectedComp.label.replace(/\n/g, ' ')}
                 </span>
-                <span style={{ fontFamily: '"Courier New",Courier,monospace', fontSize: '0.6rem', letterSpacing: '0.1em', color: '#caff00', border: '1px solid #333', padding: '0.15rem 0.5rem', textTransform: 'uppercase' }}>
+                <span style={{ fontFamily: '"Courier New",Courier,monospace', fontSize: '0.71rem', letterSpacing: '0.1em', color: '#caff00', border: '1px solid #333', padding: '0.15rem 0.5rem', textTransform: 'uppercase' }}>
                   {selectedComp.tag}
                 </span>
               </div>
-              <p style={{ fontFamily: '"Courier New",Courier,monospace', fontSize: '0.86rem', lineHeight: 1.85, color: '#999', margin: 0 }}>
+              <p style={{ fontFamily: '"Courier New",Courier,monospace', fontSize: '1.01rem', lineHeight: 1.85, color: '#999', margin: 0 }}>
                 {selectedComp.description}
               </p>
             </div>
             <button
               onClick={() => setSelected(null)}
-              style={{ background: 'none', border: 'none', color: '#444', cursor: 'pointer', fontFamily: '"Courier New",Courier,monospace', fontSize: '0.65rem', letterSpacing: '0.1em', flexShrink: 0, padding: 0 }}
+              style={{ background: 'none', border: 'none', color: '#444', cursor: 'pointer', fontFamily: '"Courier New",Courier,monospace', fontSize: '0.77rem', letterSpacing: '0.1em', flexShrink: 0, padding: 0 }}
               onMouseEnter={e => { e.currentTarget.style.color = '#fff' }}
               onMouseLeave={e => { e.currentTarget.style.color = '#666' }}
             >
@@ -246,7 +246,7 @@ function NodeCard({ comp, isSelected, onClick }) {
         top: '0.55rem',
         right: '0.55rem',
         fontFamily: '"Courier New",Courier,monospace',
-        fontSize: '0.55rem',
+        fontSize: '0.65rem',
         letterSpacing: '0.1em',
         textTransform: 'uppercase',
         color: '#444',
@@ -258,7 +258,7 @@ function NodeCard({ comp, isSelected, onClick }) {
       <span style={{
         display: 'block',
         fontFamily: '"Courier New",Courier,monospace',
-        fontSize: '0.72rem',
+        fontSize: '0.85rem',
         letterSpacing: '0.1em',
         textTransform: 'uppercase',
         color: active ? '#caff00' : '#ffffff',
@@ -274,7 +274,7 @@ function NodeCard({ comp, isSelected, onClick }) {
       <span style={{
         display: 'block',
         fontFamily: '"Courier New",Courier,monospace',
-        fontSize: '0.55rem',
+        fontSize: '0.65rem',
         letterSpacing: '0.08em',
         color: '#333',
         marginTop: '0.4rem',
@@ -309,15 +309,15 @@ function MobileFlow({ onSelect, selected }) {
                 alignItems: 'center',
               }}
             >
-              <span style={{ fontFamily: '"Courier New",Courier,monospace', fontSize: '0.7rem', letterSpacing: '0.1em', color: selected === id ? '#caff00' : '#fff', textTransform: 'uppercase' }}>
+              <span style={{ fontFamily: '"Courier New",Courier,monospace', fontSize: '0.83rem', letterSpacing: '0.1em', color: selected === id ? '#caff00' : '#fff', textTransform: 'uppercase' }}>
                 {comp.label.replace(/\n/g, ' ')}
               </span>
-              <span style={{ fontFamily: '"Courier New",Courier,monospace', fontSize: '0.55rem', color: '#555', letterSpacing: '0.1em' }}>
+              <span style={{ fontFamily: '"Courier New",Courier,monospace', fontSize: '0.65rem', color: '#555', letterSpacing: '0.1em' }}>
                 {comp.tag}
               </span>
             </button>
             {!isLast && (
-              <div style={{ display: 'flex', justifyContent: 'center', padding: '0.3rem 0', color: '#2a2a2a', fontFamily: 'monospace', fontSize: '0.8rem' }}>↓</div>
+              <div style={{ display: 'flex', justifyContent: 'center', padding: '0.3rem 0', color: '#2a2a2a', fontFamily: 'monospace', fontSize: '0.94rem' }}>↓</div>
             )}
           </div>
         )
@@ -334,13 +334,13 @@ function TechStackPills() {
       viewport={{ once: true }}
       transition={{ duration: 0.3, ease: 'easeOut', delay: 0.1 }}
     >
-      <p style={{ fontFamily: '"Courier New",Courier,monospace', fontSize: '0.65rem', letterSpacing: '0.15em', color: '#444', textTransform: 'uppercase', margin: '0 0 1.5rem' }}>
+      <p style={{ fontFamily: '"Courier New",Courier,monospace', fontSize: '0.77rem', letterSpacing: '0.15em', color: '#444', textTransform: 'uppercase', margin: '0 0 1.5rem' }}>
         // TECH STACK
       </p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {Object.entries(techStack).map(([category, items]) => (
           <div key={category} style={{ display: 'flex', alignItems: 'baseline', gap: '1rem', flexWrap: 'wrap' }}>
-            <span style={{ fontFamily: '"Courier New",Courier,monospace', fontSize: '0.6rem', letterSpacing: '0.14em', color: '#444', textTransform: 'uppercase', minWidth: '120px', flexShrink: 0 }}>
+            <span style={{ fontFamily: '"Courier New",Courier,monospace', fontSize: '0.71rem', letterSpacing: '0.14em', color: '#444', textTransform: 'uppercase', minWidth: '120px', flexShrink: 0 }}>
               {category}
             </span>
             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
@@ -349,7 +349,7 @@ function TechStackPills() {
                   key={item}
                   style={{
                     fontFamily: '"Courier New",Courier,monospace',
-                    fontSize: '0.65rem',
+                    fontSize: '0.77rem',
                     letterSpacing: '0.08em',
                     color: '#888',
                     border: '1px solid #222',

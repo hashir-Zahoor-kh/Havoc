@@ -149,11 +149,11 @@ export default function Demo() {
               />
               <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.3rem' }}>
                 {[10, 20, 30, 40, 50].map(v => (
-                  <span key={v} style={{ fontFamily: 'mono', fontSize: '0.55rem', color: v <= blastRadius ? (blastRadius > BLAST_LIMIT ? '#ff3333' : '#caff00') : '#333', fontFamily: '"Courier New",monospace', letterSpacing: '0.06em' }}>{v}%</span>
+                  <span key={v} style={{ fontFamily: 'mono', fontSize: '0.65rem', color: v <= blastRadius ? (blastRadius > BLAST_LIMIT ? '#ff3333' : '#caff00') : '#333', fontFamily: '"Courier New",monospace', letterSpacing: '0.06em' }}>{v}%</span>
                 ))}
               </div>
               {blastRadius > BLAST_LIMIT && (
-                <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.6rem', color: '#ff3333', margin: '0.4rem 0 0', letterSpacing: '0.08em' }}>
+                <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.71rem', color: '#ff3333', margin: '0.4rem 0 0', letterSpacing: '0.08em' }}>
                   WARNING: exceeds system limit of {BLAST_LIMIT}%
                 </p>
               )}
@@ -176,7 +176,7 @@ export default function Demo() {
                 background: '#caff00', color: '#000000',
                 border: '1px solid #caff00',
                 fontFamily: '"Courier New",Courier,monospace',
-                fontSize: '0.75rem', letterSpacing: '0.14em',
+                fontSize: '0.89rem', letterSpacing: '0.14em',
                 textTransform: 'uppercase', padding: '0.9rem',
                 cursor: 'pointer', fontWeight: 700,
                 transition: 'background 120ms ease-out',
@@ -193,14 +193,14 @@ export default function Demo() {
             <p style={panelLabel}>// EXPERIMENT OUTPUT</p>
 
             {runState === 'idle' && (
-              <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.8rem', color: '#888', letterSpacing: '0.1em' }}>
+              <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.94rem', color: '#888', letterSpacing: '0.1em' }}>
                 AWAITING INPUT...
               </p>
             )}
 
             {/* Guardrail checks */}
             {(runState === 'checking' || runState === 'rejected' || runState === 'running' || runState === 'completed') && (
-              <div style={{ marginBottom: '1.5rem', fontFamily: '"Courier New",monospace', fontSize: '0.82rem' }}>
+              <div style={{ marginBottom: '1.5rem', fontFamily: '"Courier New",monospace', fontSize: '0.97rem' }}>
                 {CHECKS.slice(0, visibleChecks).map((c, i) => {
                   const isReject = i === 0 && runState === 'rejected'
                   return (
@@ -222,7 +222,7 @@ export default function Demo() {
                   <motion.p
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                     transition={{ duration: 0.25, delay: 0.1 }}
-                    style={{ color: '#ff3333', margin: '0.6rem 0 0', fontSize: '0.68rem', lineHeight: 1.6, letterSpacing: '0.06em' }}
+                    style={{ color: '#ff3333', margin: '0.6rem 0 0', fontSize: '0.8rem', lineHeight: 1.6, letterSpacing: '0.06em' }}
                   >
                     ERROR: blast radius {blastRadius}% exceeds limit of {BLAST_LIMIT}%.<br />experiment aborted.
                   </motion.p>
@@ -237,9 +237,9 @@ export default function Demo() {
                 transition={{ duration: 0.2 }}
                 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}
               >
-                <span style={{ fontFamily: '"Courier New",monospace', fontSize: '0.6rem', color: '#666', letterSpacing: '0.12em' }}>STATUS</span>
+                <span style={{ fontFamily: '"Courier New",monospace', fontSize: '0.71rem', color: '#666', letterSpacing: '0.12em' }}>STATUS</span>
                 <span style={{
-                  fontFamily: '"Courier New",monospace', fontSize: '0.78rem', letterSpacing: '0.14em',
+                  fontFamily: '"Courier New",monospace', fontSize: '0.92rem', letterSpacing: '0.14em',
                   color: EXP_STATE_COLORS[expState],
                   border: `1px solid ${EXP_STATE_COLORS[expState]}`,
                   padding: '0.2rem 0.7rem',
@@ -256,7 +256,7 @@ export default function Demo() {
                 transition={{ duration: 0.25 }}
                 style={{ marginBottom: '1.5rem' }}
               >
-                <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.6rem', color: '#666', letterSpacing: '0.12em', margin: '0 0 0.75rem', textTransform: 'uppercase' }}>
+                <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.71rem', color: '#666', letterSpacing: '0.12em', margin: '0 0 0.75rem', textTransform: 'uppercase' }}>
                   POD GRID — {labelSelector}
                 </p>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
@@ -271,11 +271,11 @@ export default function Demo() {
                       }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', marginBottom: '0.25rem' }}>
                           <span style={{ width: '5px', height: '5px', background: colors.dot, borderRadius: '50%', flexShrink: 0, display: 'inline-block', transition: 'background 300ms' }} />
-                          <span style={{ fontFamily: '"Courier New",monospace', fontSize: '0.5rem', color: '#888', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <span style={{ fontFamily: '"Courier New",monospace', fontSize: '0.59rem', color: '#888', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {pod.name}
                           </span>
                         </div>
-                        <span style={{ fontFamily: '"Courier New",monospace', fontSize: '0.52rem', color: colors.text, letterSpacing: '0.06em', transition: 'color 300ms' }}>
+                        <span style={{ fontFamily: '"Courier New",monospace', fontSize: '0.61rem', color: colors.text, letterSpacing: '0.06em', transition: 'color 300ms' }}>
                           {pod.status}
                         </span>
                       </div>
@@ -301,8 +301,8 @@ export default function Demo() {
                   ['DURATION',      resultCard.duration],
                 ].map(([k, v]) => (
                   <div key={k} style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: '0.5rem', marginBottom: '0.35rem' }}>
-                    <span style={{ fontFamily: '"Courier New",monospace', fontSize: '0.62rem', color: '#666', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{k}</span>
-                    <span style={{ fontFamily: '"Courier New",monospace', fontSize: '0.62rem', color: k === 'STATUS' ? '#00ff88' : '#ffffff', letterSpacing: '0.06em' }}>{v}</span>
+                    <span style={{ fontFamily: '"Courier New",monospace', fontSize: '0.73rem', color: '#666', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{k}</span>
+                    <span style={{ fontFamily: '"Courier New",monospace', fontSize: '0.73rem', color: k === 'STATUS' ? '#00ff88' : '#ffffff', letterSpacing: '0.06em' }}>{v}</span>
                   </div>
                 ))}
               </motion.div>
@@ -314,7 +314,7 @@ export default function Demo() {
         <div>
           <p style={{ ...eyebrow, marginBottom: '1rem' }}>// EXPERIMENT HISTORY</p>
           <div style={{ border: '1px solid #1a1a1a', overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: '"Courier New",monospace', fontSize: '0.65rem' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: '"Courier New",monospace', fontSize: '0.77rem' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid #1a1a1a' }}>
                   {['ID', 'ACTION', 'TARGET', 'STATUS', 'TIMESTAMP', 'DURATION'].map(h => (
@@ -376,8 +376,8 @@ function HistoryRow({ exp, isExpanded, onToggle }) {
                 ['DURATION',      exp.duration],
               ].map(([k, v]) => (
                 <div key={k}>
-                  <span style={{ display: 'block', fontFamily: '"Courier New",monospace', fontSize: '0.55rem', color: '#666', letterSpacing: '0.1em', marginBottom: '0.15rem' }}>{k}</span>
-                  <span style={{ fontFamily: '"Courier New",monospace', fontSize: '0.62rem', color: k === 'STATUS' ? ({ COMPLETED: '#00ff88', ABORTED: '#ff3333', RUNNING: '#caff00' }[v] || '#fff') : '#fff' }}>{v}</span>
+                  <span style={{ display: 'block', fontFamily: '"Courier New",monospace', fontSize: '0.65rem', color: '#666', letterSpacing: '0.1em', marginBottom: '0.15rem' }}>{k}</span>
+                  <span style={{ fontFamily: '"Courier New",monospace', fontSize: '0.73rem', color: k === 'STATUS' ? ({ COMPLETED: '#00ff88', ABORTED: '#ff3333', RUNNING: '#caff00' }[v] || '#fff') : '#fff' }}>{v}</span>
                 </div>
               ))}
             </div>
@@ -405,7 +405,7 @@ function ActionSelect({ value, onChange }) {
             <button
               key={a}
               onClick={() => { onChange(a); setOpen(false) }}
-              style={{ display: 'block', width: '100%', textAlign: 'left', background: a === value ? '#111' : 'transparent', border: 'none', padding: '0.65rem 0.85rem', fontFamily: '"Courier New",monospace', fontSize: '0.7rem', color: a === value ? '#caff00' : '#fff', cursor: 'pointer', letterSpacing: '0.08em' }}
+              style={{ display: 'block', width: '100%', textAlign: 'left', background: a === value ? '#111' : 'transparent', border: 'none', padding: '0.65rem 0.85rem', fontFamily: '"Courier New",monospace', fontSize: '0.83rem', color: a === value ? '#caff00' : '#fff', cursor: 'pointer', letterSpacing: '0.08em' }}
               onMouseEnter={e => { if (a !== value) e.currentTarget.style.background = '#111' }}
               onMouseLeave={e => { if (a !== value) e.currentTarget.style.background = 'transparent' }}
             >
@@ -421,7 +421,7 @@ function ActionSelect({ value, onChange }) {
 function Field({ label, accent, children }) {
   return (
     <div style={{ marginBottom: '1.25rem' }}>
-      <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.7rem', letterSpacing: '0.13em', color: '#777', textTransform: 'uppercase', margin: '0 0 0.5rem' }}>
+      <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.83rem', letterSpacing: '0.13em', color: '#777', textTransform: 'uppercase', margin: '0 0 0.5rem' }}>
         {label}
         {accent && <span style={{ color: '#caff00' }}>{accent}</span>}
       </p>
@@ -431,9 +431,9 @@ function Field({ label, accent, children }) {
 }
 
 /* ---- shared styles ---- */
-const eyebrow = { fontFamily: '"Courier New",Courier,monospace', fontSize: '0.7rem', letterSpacing: '0.18em', color: '#caff00', textTransform: 'uppercase', margin: '0 0 0.6rem' }
+const eyebrow = { fontFamily: '"Courier New",Courier,monospace', fontSize: '0.83rem', letterSpacing: '0.18em', color: '#caff00', textTransform: 'uppercase', margin: '0 0 0.6rem' }
 const heading  = { fontFamily: '"Bebas Neue",cursive', fontSize: 'clamp(3rem,8vw,5.5rem)', color: '#ffffff', margin: 0, letterSpacing: '0.04em', lineHeight: 1 }
 const panel    = { border: '1px solid #1a1a1a', background: '#0a0a0a', padding: '1.75rem' }
 const panelLabel = { ...eyebrow, margin: '0 0 1.5rem' }
-const inputStyle = { background: '#000', border: '1px solid #333', color: '#fff', fontFamily: '"Courier New",monospace', fontSize: '0.7rem', letterSpacing: '0.08em', padding: '0.6rem 0.85rem', width: '100%', outline: 'none' }
+const inputStyle = { background: '#000', border: '1px solid #333', color: '#fff', fontFamily: '"Courier New",monospace', fontSize: '0.83rem', letterSpacing: '0.08em', padding: '0.6rem 0.85rem', width: '100%', outline: 'none' }
 const td       = { padding: '0.6rem 1rem', whiteSpace: 'nowrap', verticalAlign: 'middle' }

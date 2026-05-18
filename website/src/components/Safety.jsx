@@ -76,7 +76,7 @@ function BlastRadiusCard() {
         ))}
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.6rem', fontFamily: '"Courier New",monospace', fontSize: '0.63rem', letterSpacing: '0.1em' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.6rem', fontFamily: '"Courier New",monospace', fontSize: '0.74rem', letterSpacing: '0.1em' }}>
         <span style={{ color: '#888' }}>{affected} / {TOTAL_PODS} pods affected</span>
         <span style={{ color: rejected ? '#ff3333' : '#caff00' }}>{radius}%</span>
       </div>
@@ -94,7 +94,7 @@ function BlastRadiusCard() {
               key="warn"
               initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              style={{ fontFamily: '"Courier New",monospace', fontSize: '0.68rem', color: '#ff3333', margin: 0, letterSpacing: '0.1em' }}
+              style={{ fontFamily: '"Courier New",monospace', fontSize: '0.8rem', color: '#ff3333', margin: 0, letterSpacing: '0.1em' }}
             >
               EXPERIMENT WOULD BE REJECTED — EXCEEDS {BLAST_LIMIT}% LIMIT
             </motion.p>
@@ -129,8 +129,8 @@ function LockCard() {
         concurrent experiments targeting the same service are blocked, preventing compound failures.
       </p>
 
-      <div style={{ margin: '1.5rem 0 1rem', background: '#050505', border: '1px solid #111', padding: '1rem 1.25rem', fontFamily: '"Courier New",monospace', fontSize: '0.7rem', minHeight: '96px' }}>
-        <span style={{ color: '#555', display: 'block', marginBottom: '0.6rem', fontSize: '0.55rem', letterSpacing: '0.1em' }}>redis-cli</span>
+      <div style={{ margin: '1.5rem 0 1rem', background: '#050505', border: '1px solid #111', padding: '1rem 1.25rem', fontFamily: '"Courier New",monospace', fontSize: '0.83rem', minHeight: '96px' }}>
+        <span style={{ color: '#555', display: 'block', marginBottom: '0.6rem', fontSize: '0.65rem', letterSpacing: '0.1em' }}>redis-cli</span>
 
         <AnimatePresence mode="wait">
           {locked ? (
@@ -143,7 +143,7 @@ function LockCard() {
               <span style={{ color: '#888' }}>1 EX 300</span>
               <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <span className="pulse-dot" style={{ width: '6px', height: '6px', background: '#caff00', borderRadius: '50%', display: 'inline-block', flexShrink: 0 }} />
-                <span style={{ color: '#caff00', letterSpacing: '0.1em', fontSize: '0.65rem' }}>LOCK ACQUIRED</span>
+                <span style={{ color: '#caff00', letterSpacing: '0.1em', fontSize: '0.77rem' }}>LOCK ACQUIRED</span>
               </div>
             </motion.div>
           ) : (
@@ -154,14 +154,14 @@ function LockCard() {
               <span style={{ color: '#888' }}>DEL havoc:active:checkout</span>
               <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <span style={{ width: '6px', height: '6px', background: '#333', borderRadius: '50%', display: 'inline-block' }} />
-                <span style={{ color: '#444', letterSpacing: '0.1em', fontSize: '0.65rem' }}>LOCK RELEASED</span>
+                <span style={{ color: '#444', letterSpacing: '0.1em', fontSize: '0.77rem' }}>LOCK RELEASED</span>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
-      <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.6rem', color: '#333', letterSpacing: '0.08em', margin: 0 }}>
+      <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.71rem', color: '#333', letterSpacing: '0.08em', margin: 0 }}>
         TTL: 300s · renewed on heartbeat · auto-expires on agent crash
       </p>
     </GuardrailCard>
@@ -202,7 +202,7 @@ function KillSwitchCard() {
               key={exp.id}
               animate={{ borderColor: exp.status === 'ABORTED' ? '#ff3333' : exp.status === 'ABORTING' ? '#ff9900' : '#1a1a1a' }}
               transition={{ duration: 0.3 }}
-              style={{ border: '1px solid #1a1a1a', padding: '0.55rem 0.85rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: '"Courier New",monospace', fontSize: '0.65rem' }}
+              style={{ border: '1px solid #1a1a1a', padding: '0.55rem 0.85rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: '"Courier New",monospace', fontSize: '0.77rem' }}
             >
               <div>
                 <span style={{ color: '#fff', letterSpacing: '0.08em' }}>{exp.action}</span>
@@ -225,7 +225,7 @@ function KillSwitchCard() {
           onClick={killed ? handleReset : handleKill}
           style={{
             flex: 1,
-            fontFamily: '"Courier New",monospace', fontSize: '0.7rem', letterSpacing: '0.12em',
+            fontFamily: '"Courier New",monospace', fontSize: '0.83rem', letterSpacing: '0.12em',
             textTransform: 'uppercase', padding: '0.75rem',
             border: `1px solid ${killed ? '#333' : '#ff3333'}`,
             color: killed ? '#555' : '#ff3333',
@@ -259,7 +259,7 @@ function BlackoutCard() {
         {/* Hour axis labels */}
         <div style={{ display: 'flex', marginBottom: '4px', paddingLeft: '34px', gap: '0' }}>
           {[0, 6, 12, 18].map(h => (
-            <div key={h} style={{ flex: '6 0 0', fontFamily: '"Courier New",monospace', fontSize: '0.48rem', color: '#333', letterSpacing: '0.06em' }}>
+            <div key={h} style={{ flex: '6 0 0', fontFamily: '"Courier New",monospace', fontSize: '0.57rem', color: '#333', letterSpacing: '0.06em' }}>
               {String(h).padStart(2, '0')}:00
             </div>
           ))}
@@ -267,7 +267,7 @@ function BlackoutCard() {
 
         {DAYS.map(day => (
           <div key={day} style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '3px' }}>
-            <span style={{ fontFamily: '"Courier New",monospace', fontSize: '0.52rem', color: '#444', letterSpacing: '0.06em', width: '30px', flexShrink: 0 }}>
+            <span style={{ fontFamily: '"Courier New",monospace', fontSize: '0.61rem', color: '#444', letterSpacing: '0.06em', width: '30px', flexShrink: 0 }}>
               {day}
             </span>
             {Array.from({ length: 24 }, (_, h) => {
@@ -297,7 +297,7 @@ function BlackoutCard() {
           {[['#3a0000', 'rgba(255,51,51,0.12)', 'BLOCKED'], ['#111', '#0a0a0a', 'AVAILABLE']].map(([border, bg, label]) => (
             <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <div style={{ width: '12px', height: '12px', border: `1px solid ${border}`, background: bg }} />
-              <span style={{ fontFamily: '"Courier New",monospace', fontSize: '0.55rem', color: '#444', letterSpacing: '0.08em' }}>{label}</span>
+              <span style={{ fontFamily: '"Courier New",monospace', fontSize: '0.65rem', color: '#444', letterSpacing: '0.08em' }}>{label}</span>
             </div>
           ))}
         </div>
@@ -310,7 +310,7 @@ function BlackoutCard() {
               key="tooltip"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
-              style={{ fontFamily: '"Courier New",monospace', fontSize: '0.65rem', color: '#ff3333', margin: 0, letterSpacing: '0.08em' }}
+              style={{ fontFamily: '"Courier New",monospace', fontSize: '0.77rem', color: '#ff3333', margin: 0, letterSpacing: '0.08em' }}
             >
               EXPERIMENT REJECTED — BLACKOUT ACTIVE ({hovered.day} {String(hovered.hour).padStart(2,'0')}:00)
             </motion.p>
@@ -331,13 +331,13 @@ function GuardrailCard({ title, tag, children }) {
     >
       <span style={{
         position: 'absolute', top: '1rem', right: '1rem',
-        fontFamily: '"Courier New",monospace', fontSize: '0.55rem',
+        fontFamily: '"Courier New",monospace', fontSize: '0.65rem',
         letterSpacing: '0.1em', color: '#444', border: '1px solid #1a1a1a',
         padding: '0.15rem 0.5rem', textTransform: 'uppercase',
       }}>{tag}</span>
 
       <h3 style={{
-        fontFamily: '"Courier New",monospace', fontSize: '0.78rem',
+        fontFamily: '"Courier New",monospace', fontSize: '0.92rem',
         letterSpacing: '0.12em', color: '#ffffff', textTransform: 'uppercase',
         margin: '0 0 0.75rem', paddingRight: '5rem', fontWeight: 'normal',
       }}>{title}</h3>
@@ -348,6 +348,6 @@ function GuardrailCard({ title, tag, children }) {
 }
 
 /* ── Shared styles ──────────────────────────────────────────────────── */
-const eyebrow = { fontFamily: '"Courier New",Courier,monospace', fontSize: '0.7rem', letterSpacing: '0.18em', color: '#caff00', textTransform: 'uppercase', margin: '0 0 0.6rem' }
+const eyebrow = { fontFamily: '"Courier New",Courier,monospace', fontSize: '0.83rem', letterSpacing: '0.18em', color: '#caff00', textTransform: 'uppercase', margin: '0 0 0.6rem' }
 const heading  = { fontFamily: '"Bebas Neue",cursive', fontSize: 'clamp(3rem,8vw,5.5rem)', color: '#ffffff', margin: 0, letterSpacing: '0.04em', lineHeight: 1 }
-const desc     = { fontFamily: '"Courier New",monospace', fontSize: '0.84rem', lineHeight: 1.8, color: '#999', margin: '0 0 0.25rem' }
+const desc     = { fontFamily: '"Courier New",monospace', fontSize: '0.99rem', lineHeight: 1.8, color: '#999', margin: '0 0 0.25rem' }

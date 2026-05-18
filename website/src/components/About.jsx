@@ -67,7 +67,7 @@ export default function About() {
                     }}
                   >
                     <div style={{ fontFamily: '"Bebas Neue",cursive', fontSize: '2.5rem', color: '#caff00', lineHeight: 1 }}>{num}</div>
-                    <div style={{ fontFamily: '"Courier New",monospace', fontSize: '0.6rem', letterSpacing: '0.12em', color: '#666', textTransform: 'uppercase', marginTop: '0.3rem' }}>{label}</div>
+                    <div style={{ fontFamily: '"Courier New",monospace', fontSize: '0.71rem', letterSpacing: '0.12em', color: '#666', textTransform: 'uppercase', marginTop: '0.3rem' }}>{label}</div>
                   </div>
                 ))}
               </div>
@@ -158,8 +158,7 @@ export default function About() {
                   </span>
                 </div>
                 <div>
-                  <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.82rem', color: '#ffffff', margin: 0, letterSpacing: '0.06em' }}>{NAME}</p>
-                  <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.65rem', color: '#666', margin: '0.15rem 0 0', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Platform Engineer</p>
+                  <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.97rem', color: '#ffffff', margin: 0, letterSpacing: '0.06em' }}>{NAME}</p>
                 </div>
               </div>
             </motion.div>
@@ -186,7 +185,7 @@ export default function About() {
 function ContactRow({ label, children }) {
   return (
     <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem', borderBottom: '1px solid #111', paddingBottom: '0.65rem' }}>
-      <span style={{ fontFamily: '"Courier New",monospace', fontSize: '0.58rem', letterSpacing: '0.13em', color: '#444', textTransform: 'uppercase', minWidth: '56px', flexShrink: 0 }}>
+      <span style={{ fontFamily: '"Courier New",monospace', fontSize: '0.68rem', letterSpacing: '0.13em', color: '#444', textTransform: 'uppercase', minWidth: '56px', flexShrink: 0 }}>
         {label}
       </span>
       {children}
@@ -204,7 +203,7 @@ function LinkButton({ href, label, external }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        fontFamily: '"Courier New",monospace', fontSize: '0.68rem',
+        fontFamily: '"Courier New",monospace', fontSize: '0.8rem',
         letterSpacing: '0.13em', textTransform: 'uppercase',
         color: hovered ? '#000000' : '#ffffff',
         background: hovered ? '#caff00' : 'transparent',
@@ -220,8 +219,8 @@ function LinkButton({ href, label, external }) {
   )
 }
 
-const eyebrow    = { fontFamily: '"Courier New",Courier,monospace', fontSize: '0.7rem', letterSpacing: '0.18em', color: '#caff00', textTransform: 'uppercase', margin: '0 0 0.6rem' }
+const eyebrow    = { fontFamily: '"Courier New",Courier,monospace', fontSize: '0.83rem', letterSpacing: '0.18em', color: '#caff00', textTransform: 'uppercase', margin: '0 0 0.6rem' }
 const heading    = { fontFamily: '"Bebas Neue",cursive', fontSize: 'clamp(3rem,8vw,5.5rem)', color: '#ffffff', margin: 0, letterSpacing: '0.04em', lineHeight: 1 }
-const bodyText   = { fontFamily: '"Courier New",monospace', fontSize: '0.88rem', lineHeight: 1.85, color: '#999', margin: 0 }
-const contactLink = { fontFamily: '"Courier New",monospace', fontSize: '0.82rem', color: '#ffffff', textDecoration: 'none', letterSpacing: '0.04em', transition: 'color 150ms ease-out' }
-const footerText  = { fontFamily: '"Courier New",monospace', fontSize: '0.65rem', letterSpacing: '0.12em', color: '#555', textTransform: 'uppercase' }
+const bodyText   = { fontFamily: '"Courier New",monospace', fontSize: '1.04rem', lineHeight: 1.85, color: '#999', margin: 0 }
+const contactLink = { fontFamily: '"Courier New",monospace', fontSize: '0.97rem', color: '#ffffff', textDecoration: 'none', letterSpacing: '0.04em', transition: 'color 150ms ease-out' }
+const footerText  = { fontFamily: '"Courier New",monospace', fontSize: '0.77rem', letterSpacing: '0.12em', color: '#555', textTransform: 'uppercase' }

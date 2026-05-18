@@ -85,7 +85,7 @@ export default function Navbar() {
             />
             <span style={{
               fontFamily: '"Courier New", Courier, monospace',
-              fontSize: '0.65rem',
+              fontSize: '0.77rem',
               letterSpacing: '0.12em',
               color: '#666666',
               textTransform: 'uppercase',
@@ -113,7 +113,7 @@ function NavLink({ label, href, onClick }) {
       onClick={e => onClick(e, href)}
       style={{
         fontFamily: '"Courier New", Courier, monospace',
-        fontSize: '0.7rem',
+        fontSize: '0.83rem',
         letterSpacing: '0.13em',
         textTransform: 'uppercase',
         color: '#888888',
@@ -137,7 +137,7 @@ function GithubButton() {
       rel="noopener noreferrer"
       style={{
         fontFamily: '"Courier New", Courier, monospace',
-        fontSize: '0.65rem',
+        fontSize: '0.77rem',
         letterSpacing: '0.13em',
         textTransform: 'uppercase',
         color: '#ffffff',
@@ -181,7 +181,7 @@ function MobileNav({ links, onNav }) {
           onClick={e => onNav(e, href)}
           style={{
             fontFamily: '"Courier New", Courier, monospace',
-            fontSize: '0.65rem',
+            fontSize: '0.77rem',
             letterSpacing: '0.13em',
             textTransform: 'uppercase',
             color: '#888',

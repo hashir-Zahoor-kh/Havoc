@@ -80,7 +80,7 @@ export default function Capabilities() {
                   padding: '0.75rem 1rem',
                   display: 'flex', alignItems: 'center',
                 }}>
-                  <span style={{ fontFamily: '"Courier New",monospace', fontSize: '0.6rem', letterSpacing: '0.13em', color: '#444', textTransform: 'uppercase' }}>
+                  <span style={{ fontFamily: '"Courier New",monospace', fontSize: '0.71rem', letterSpacing: '0.13em', color: '#444', textTransform: 'uppercase' }}>
                     {category}
                   </span>
                 </div>
@@ -134,7 +134,7 @@ function ActionCard({ action, delay }) {
       {/* Tag */}
       <span style={{
         position: 'absolute', top: '1.1rem', right: '1.1rem',
-        fontFamily: '"Courier New",monospace', fontSize: '0.55rem',
+        fontFamily: '"Courier New",monospace', fontSize: '0.65rem',
         letterSpacing: '0.1em', color: hovered ? accent : '#444',
         border: `1px solid ${hovered ? accent : '#222'}`,
         padding: '0.15rem 0.5rem', textTransform: 'uppercase',
@@ -145,7 +145,7 @@ function ActionCard({ action, delay }) {
 
       {/* Action name */}
       <h3 style={{
-        fontFamily: '"Courier New",monospace', fontSize: '0.85rem',
+        fontFamily: '"Courier New",monospace', fontSize: '1rem',
         letterSpacing: '0.12em', color: hovered ? accent : '#ffffff',
         textTransform: 'uppercase', margin: '0 0 1rem',
         paddingRight: '6rem', fontWeight: 'normal',
@@ -158,7 +158,7 @@ function ActionCard({ action, delay }) {
       <div style={{ width: '2rem', height: '1px', background: hovered ? accent : '#222', marginBottom: '1rem', transition: 'background 150ms, width 150ms' }} />
 
       {/* Description */}
-      <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.84rem', lineHeight: 1.82, color: '#999', margin: 0 }}>
+      <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.99rem', lineHeight: 1.82, color: '#999', margin: 0 }}>
         {action.description}
       </p>
     </motion.div>
@@ -184,7 +184,7 @@ function DeployCard({ target, delay }) {
       {/* Tag */}
       <span style={{
         position: 'absolute', top: '1rem', right: '1rem',
-        fontFamily: '"Courier New",monospace', fontSize: '0.55rem',
+        fontFamily: '"Courier New",monospace', fontSize: '0.65rem',
         letterSpacing: '0.1em',
         color: isProd ? '#caff00' : '#777',
         border: `1px solid ${isProd ? '#2a3300' : '#1a1a1a'}`,
@@ -194,14 +194,14 @@ function DeployCard({ target, delay }) {
       </span>
 
       <h3 style={{
-        fontFamily: '"Courier New",monospace', fontSize: '0.82rem',
+        fontFamily: '"Courier New",monospace', fontSize: '0.97rem',
         letterSpacing: '0.12em', color: '#ffffff', textTransform: 'uppercase',
         margin: '0 0 0.9rem', paddingRight: '7rem', fontWeight: 'normal',
       }}>
         {target.name}
       </h3>
 
-      <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.84rem', lineHeight: 1.82, color: '#999', margin: '0 0 1.25rem' }}>
+      <p style={{ fontFamily: '"Courier New",monospace', fontSize: '0.99rem', lineHeight: 1.82, color: '#999', margin: '0 0 1.25rem' }}>
         {target.detail}
       </p>
 
@@ -219,7 +219,7 @@ function StackPill({ label }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        fontFamily: '"Courier New",monospace', fontSize: '0.62rem',
+        fontFamily: '"Courier New",monospace', fontSize: '0.73rem',
         letterSpacing: '0.08em', textTransform: 'uppercase',
         color: hovered ? '#caff00' : '#777',
         border: `1px solid ${hovered ? '#caff00' : '#222'}`,
@@ -233,6 +233,6 @@ function StackPill({ label }) {
   )
 }
 
-const eyebrow    = { fontFamily: '"Courier New",Courier,monospace', fontSize: '0.7rem', letterSpacing: '0.18em', color: '#caff00', textTransform: 'uppercase', margin: '0 0 0.6rem' }
+const eyebrow    = { fontFamily: '"Courier New",Courier,monospace', fontSize: '0.83rem', letterSpacing: '0.18em', color: '#caff00', textTransform: 'uppercase', margin: '0 0 0.6rem' }
 const heading    = { fontFamily: '"Bebas Neue",cursive', fontSize: 'clamp(3rem,8vw,5.5rem)', color: '#ffffff', margin: 0, letterSpacing: '0.04em', lineHeight: 1 }
-const sectionLabel = { fontFamily: '"Courier New",monospace', fontSize: '0.6rem', letterSpacing: '0.18em', color: '#333', textTransform: 'uppercase', margin: '0 0 1.25rem' }
+const sectionLabel = { fontFamily: '"Courier New",monospace', fontSize: '0.71rem', letterSpacing: '0.18em', color: '#333', textTransform: 'uppercase', margin: '0 0 1.25rem' }
